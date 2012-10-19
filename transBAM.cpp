@@ -16,7 +16,7 @@
 using namespace std;
 using namespace BamTools;
 
-
+const int offset=33;
 
 
 bool isTransition(char reference,char read){
@@ -202,7 +202,7 @@ int main (int argc, char *argv[]) {
 		    //Skip bases with low base quality
 		    //this is done specifically to avoid unresolved base pairs
 		    //that were called as 'A's with qual = 0 by Martin's BCL reader 
-		    if(int(al.Qualities[i]-33) < minBaseQuality ){
+		    if(int(al.Qualities[i]-offset) < minBaseQuality ){
 			continue;
 		    }
 		    

@@ -49,7 +49,7 @@ inline vector<mdField> mdString2Vector(const string & mdFieldToParse){
     toadd.offset=0;
     toadd.bp='N';
 
-    while(mdFieldToParse.length() != i){
+    while(int(mdFieldToParse.length()) != i){
 	if(isdigit(mdFieldToParse[i])){
 	    toadd.offset=toadd.offset*10+(int(mdFieldToParse[i])-asciiOffsetZero);
 	}else{

@@ -16,7 +16,7 @@
 using namespace std;
 using namespace BamTools;
 
-
+const int offset=33;
 
 
 bool isTransition(char reference,char read){
@@ -56,18 +56,14 @@ bool isTransversions(char reference,char read){
 
 
 int main (int argc, char *argv[]) {
-    bool pairedEnd=false;
-    // unsigned int  binSize        = 1000;
-    unsigned int  minBaseQuality = 0;
-    // string fastaIndex = "/mnt/solexa/bin/gabriel/index.hg19.fai";
+
+    int  minBaseQuality = 0;
 
     string usage=string(""+string(argv[0])+"  [in BAM file] [deam out BAM] [not deam out BAM]"+
 			"\nThis program divides aligned read into potentially deaminated\n"+
 			"\nreads and the puts the rest into another bam file.\n"+
 			"\nTip: if you do not need one of them, use /dev/null as your output\n"+
 			"arguments:\n"+
-			// // "\t"+"--fai [fasta index] : Fasta index (Default: "+stringify(fastaIndex)+")\n"+
-			// "\t"+"--bin [bin sizes]   : Bin size to use (Default: "+stringify(binSize)+")\n"+
 			"\t"+"--bq  [base qual]   : Minimum base quality to flag a deaminated site (Default: "+stringify(minBaseQuality)+")\n"+
 			"\n");
 
@@ -84,7 +80,7 @@ int main (int argc, char *argv[]) {
 
 	
         if(string(argv[i]) == "--bq"){
-	    minBaseQuality=destringify<unsigned int>(argv[i+1]);
+	    minBaseQuality=destringify<int>(argv[i+1]);
             i++;
             continue;
 	}
@@ -121,27 +117,13 @@ int main (int argc, char *argv[]) {
 
 
 
-    // if ( !reader.LocateIndex()  ) {
-    // 	cerr << "The index for the BAM file cannot be located" << endl;
-    // 	return 1;
-    // }
-
-    // if ( !reader.HasIndex()  ) {
-    // 	cerr << "The BAM file has not been indexed." << endl;
-    // 	return 1;
-    // }
-
-
-
 
 
 
 
     //iterating over the alignments for these regions
     BamAlignment al;
-    //    unsigned int readCounter  =0;
-    //    unsigned int sumReadLength=0;
-
+    int i;
 
     while ( reader.GetNextAlignment(al) ) {
 
@@ -155,67 +137,65 @@ int main (int argc, char *argv[]) {
 	    return 1;
 	}
 
-	//	cout<<"1 "<<al.Name<<"\t"<<al.QueryBases<<"\t"<<al.Qualities<<endl;
 
 	string reconstructedReference = reconstructRef(&al);
 	char refeBase;
 	char readBase;
 	bool isDeaminated;
-	//	cout<<"2 "<<al.Name<<"\t"<<al.QueryBases<<"\t"<<al.Qualities<<endl;	
-	//iterate over each character
 	if(al.Qualities.size() != reconstructedReference.size()){
 	    cerr<<"Quality line is not the same size as the reconstructed reference"<<endl;
 	    return 1;
 	}
 
-	for(int i=0;i<al.QueryBases.size();i++){
-	    //skip over matches and soft clipped bases, unresolved bases and deletion in the reference 
-	    if(reconstructedReference[i] == 'S' ||
-	       reconstructedReference[i] == 'M' || 
-	       reconstructedReference[i] == 'I' || 
-	       al.QueryBases[i]          == 'N' ){
-		continue;
-	    }
+	isDeaminated=false;
 
-	    //Skip bases with low base quality
-	    //this is done specifically to avoid unresolved base pairs
-	    // cout<<al.Qualities[i]<<endl;
-	    // cout<<int(al.Qualities[i]-33)<<endl;
-	    // return 1;
-	    if( int(al.Qualities[i]-33) < minBaseQuality ){
-		continue;
-	    }
-		    
+	if(al.IsReverseStrand()){
+
+	    //first base next to 3'
+	    i = 0 ;
 	    refeBase=toupper(reconstructedReference[i]);
-	    readBase=toupper(al.QueryBases[i]);
-	    isDeaminated=false;
-	    //	    cout<<"3 "<<al.Name<<"\t"<<al.QueryBases<<"\t"<<al.Qualities<<endl;
+	    readBase=toupper(         al.QueryBases[i]);
+	    if(  readBase  == 'A' && refeBase  == 'G' && int(al.Qualities[i]-offset) >= minBaseQuality){  isDeaminated=true; }
+
+	    //second base next to 3'
+	    i = 1;
+	    refeBase=toupper(reconstructedReference[i]);
+	    readBase=toupper(         al.QueryBases[i]);
+	    if( readBase  == 'A' && refeBase  == 'G'  && int(al.Qualities[i]-offset) >= minBaseQuality){  isDeaminated=true; }
+
+	    //last  base next to 5'
+	    i = (al.QueryBases.length()-1) ;
+	    refeBase=toupper(reconstructedReference[i]);
+	    readBase=toupper(         al.QueryBases[i]);
+	    if( readBase  == 'A' && refeBase  == 'G'  && int(al.Qualities[i]-offset) >= minBaseQuality){  isDeaminated=true; }
+
+
+	}else{
+
+		
+	    //first base next to 5'
+	    i = 0;
+	    refeBase=toupper(reconstructedReference[i]);
+	    readBase=toupper(         al.QueryBases[i]);
+	    if( readBase  == 'T' && refeBase  == 'C'  && int(al.Qualities[i]-offset) >= minBaseQuality){  isDeaminated=true; }
+
+	    //second last base next to 3'
+	    i = (al.QueryBases.length()-2);
+	    refeBase=toupper(reconstructedReference[i]);
+	    readBase=toupper(         al.QueryBases[i]);
+	    if( readBase  == 'T' && refeBase  == 'C'  && int(al.Qualities[i]-offset) >= minBaseQuality){  isDeaminated=true; }
+
+	    //last base next to 5'
+	    i = (al.QueryBases.length()-1);
+	    refeBase=toupper(reconstructedReference[i]);
+	    readBase=toupper(         al.QueryBases[i]);
+	    if( readBase  == 'T' && refeBase  == 'C'  && int(al.Qualities[i]-offset) >= minBaseQuality){  isDeaminated=true; }	
 	    
+	}
+		  
 
-	    if(al.IsReverseStrand()){
 
-		//first base next to 3'
-		if(i == 0                          && readBase  == 'A' && refeBase  == 'G'){  isDeaminated=true; }
-		//seonc base next to 3'
-		if(i == 1                          && readBase  == 'A' && refeBase  == 'G'){  isDeaminated=true; }	       		    
-		//last  base next to 5'
-		if(i == (al.QueryBases.length()-1) && readBase  == 'A' && refeBase  == 'G'){  isDeaminated=true; }
 
-	    }else{
-		
-		//first base next to 5'
-		if(i == 0                          && readBase  == 'T' && refeBase  == 'C'){  isDeaminated=true; }
-		//second last base next to 3'
-		if(i == (al.QueryBases.length()-2) && readBase  == 'T' && refeBase  == 'C'){  isDeaminated=true; }	       		    
-		//last base next to 5'
-		if(i == (al.QueryBases.length()-1) && readBase  == 'T' && refeBase  == 'C'){  isDeaminated=true; }
-		
-
-	    }
-		       
-	   
-	}//for each base
-	
 	if(isDeaminated){
 	    writerDeam.SaveAlignment(al);		
 	}else{

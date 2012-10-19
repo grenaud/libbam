@@ -8,7 +8,7 @@ LDFLAGS  += -lbamtools
 LDLIBS   += ${BAMTOOLS}/lib/libbamtools.a -lm -lz
 
 
-all: allFailqc allPassqc cutDeaminated decrQualDeaminated decrQualDeaminatedDoubleStranded failQualPair filterDeaminated getCtrlReadsBAM removeRG retrieveRG subSampleBAM transBAM transBAMperRead ReconsReferenceBAM.o
+all: allFailqc allPassqc cutDeaminated decrQualDeaminated decrQualDeaminatedDoubleStranded failQualPair filterDeaminated removeRG retrieveRG subSampleBAM transBAM transBAMperRead ReconsReferenceBAM.o
 
 
 
@@ -53,12 +53,6 @@ filterDeaminated.o: filterDeaminated.cpp
 	${CXX} ${CXXFLAGS} filterDeaminated.cpp
 
 filterDeaminated: filterDeaminated.o  ${LIBGAB}utils.o ReconsReferenceBAM.o
-	${CXX} $(LDFLAGS) -o $@ $^ $(LDLIBS)
-
-getCtrlReadsBAM.o: getCtrlReadsBAM.cpp
-	${CXX} ${CXXFLAGS} getCtrlReadsBAM.cpp
-
-getCtrlReadsBAM: getCtrlReadsBAM.o  ${LIBGAB}utils.o
 	${CXX} $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
 ReconsReferenceBAM.o: ReconsReferenceBAM.cpp

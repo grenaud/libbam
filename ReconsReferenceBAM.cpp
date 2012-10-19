@@ -41,7 +41,7 @@ string reconstructRef(const BamAlignment  * al){
     }
 	
     vector<CigarOp> cigarData=al->CigarData;
-    for(int i=0;i<cigarData.size();i++){
+    for(unsigned int i=0;i<cigarData.size();i++){
 	reconstructedTemp+=string(cigarData[i].Length,cigarData[i].Type);
     }
 
@@ -56,10 +56,10 @@ string reconstructRef(const BamAlignment  * al){
     //combine the CIGAR and MD into one single string
     int mdVectorIndex=0;
 
-    for(int i=0;i<reconstructedTemp.size();i++){
+    for(unsigned int i=0;i<reconstructedTemp.size();i++){
 	if(reconstructedTemp[i] == 'M' ){ //only look at matches and indels	    
 		
-	    if(mdVectorIndex<parsedMD.size()){ //still have mismatches
+	    if(mdVectorIndex<int(parsedMD.size())){ //still have mismatches
 
 		if(parsedMD[mdVectorIndex].offset == 0){ //we have reached a mismatch				
 
