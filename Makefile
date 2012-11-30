@@ -8,7 +8,7 @@ LDFLAGS  += -lbamtools
 LDLIBS   += ${BAMTOOLS}/lib/libbamtools.a -lm -lz
 
 
-all: allFailqc allPassqc cutDeaminated decrQualDeaminated decrQualDeaminatedDoubleStranded failQualPair filterDeaminated removeRG retrieveRG subSampleBAM transBAM transBAMperRead ReconsReferenceBAM.o
+all: allFailqc allPassqc cutDeaminated decrQualDeaminated decrQualDeaminatedDoubleStranded failQualPair filterDeaminated removeRG retrieveRG subSampleBAM transBAM transBAMperRead  filterHighEditDistance.o filterHighEditDistance
 
 
 
@@ -49,14 +49,17 @@ failQualPair.o: failQualPair.cpp
 failQualPair: failQualPair.o  ${LIBGAB}utils.o
 	${CXX} $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
+filterHighEditDistance.o: filterHighEditDistance.cpp
+	${CXX} ${CXXFLAGS} filterHighEditDistance.cpp
+
+filterHighEditDistance: filterHighEditDistance.o  ${LIBGAB}utils.o
+	${CXX} $(LDFLAGS) -o $@ $^ $(LDLIBS)
+
 filterDeaminated.o: filterDeaminated.cpp
 	${CXX} ${CXXFLAGS} filterDeaminated.cpp
 
-filterDeaminated: filterDeaminated.o  ${LIBGAB}utils.o ReconsReferenceBAM.o
+filterDeaminated: filterDeaminated.o  ${LIBGAB}utils.o ${LIBGAB}ReconsReferenceBAM.o
 	${CXX} $(LDFLAGS) -o $@ $^ $(LDLIBS)
-
-ReconsReferenceBAM.o: ReconsReferenceBAM.cpp
-	${CXX} ${CXXFLAGS} ReconsReferenceBAM.cpp
 
 removeRG.o: removeRG.cpp
 	${CXX} ${CXXFLAGS} removeRG.cpp
@@ -79,18 +82,17 @@ subSampleBAM: subSampleBAM.o  ${LIBGAB}utils.o
 transBAM.o: transBAM.cpp
 	${CXX} ${CXXFLAGS} transBAM.cpp
 
-transBAM: transBAM.o  ${LIBGAB}utils.o ReconsReferenceBAM.o
+transBAM: transBAM.o  ${LIBGAB}utils.o ${LIBGAB}ReconsReferenceBAM.o
 	${CXX} $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
 transBAMperRead.o: transBAMperRead.cpp
 	${CXX} ${CXXFLAGS} transBAMperRead.cpp
 
-transBAMperRead: transBAMperRead.o  ${LIBGAB}utils.o ReconsReferenceBAM.o
+transBAMperRead: transBAMperRead.o  ${LIBGAB}utils.o ${LIBGAB}ReconsReferenceBAM.o
 	${CXX} $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
 
 
 
 clean :
-	rm -f  allFailqc allPassqc cutDeaminated decrQualDeaminated decrQualDeaminatedDoubleStranded failQualPair filterDeaminated getCtrlReadsBAM removeRG retrieveRG subSampleBAM transBAM transBAMperRead ReconsReferenceBAM.o
-
+	rm -f  allFailqc allPassqc cutDeaminated decrQualDeaminated decrQualDeaminatedDoubleStranded failQualPair filterDeaminated getCtrlReadsBAM removeRG retrieveRG subSampleBAM transBAM transBAMperRead ${LIBGAB}ReconsReferenceBAM.o filterHighEditDistance.o filterHighEditDistance
