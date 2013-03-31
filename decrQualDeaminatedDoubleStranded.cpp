@@ -7,14 +7,11 @@
 #include "api/BamWriter.h"
 #include "api/BamAux.h"
 
+#include "utils.h"
+
 using namespace std;
 using namespace BamTools;
 
-string intStringify(int i) {
-    stringstream s;
-    s << i;
-    return s.str();
-}
 
 const int baseQualForDeam=2;
 const int offset=33;
@@ -23,18 +20,18 @@ const int offset=33;
 
 int main (int argc, char *argv[]) {
 
-    bool mapped  =false;
-    bool unmapped=false;
+    // bool mapped  =false;
+    // bool unmapped=false;
+    int bpToDecrease=5;
 
     const string usage=string(string(argv[0])+" [options] input.bam out.bam"+"\n\n"+
 			      "This program takes a BAM file as input and produces\n"+
 			      "another where the putative deaminated bases have\n"+
-			      "a base quality score of "+intStringify(baseQualForDeam)+"\n"+
-			      "given an "+intStringify(offset)+" offset \n"+
+			      "a base quality score of "+stringify(baseQualForDeam)+"\n"+
+			      "given an "+stringify(offset)+" offset \n"+
 			      "\n"+
-			      "Options:\n");
-			      // "\t"+"-u , --unmapped" +"\n\t\t"+"For an unmapped bam file"+"\n"+
-			      // "\t"+"-m , --mapped"   +"\n\t\t"+"For an mapped bam file"+"\n");
+			      "Options:\n"+
+			      "\t"+"-n" +"\t\t\t"+"Decrease the nth bases surrounding the 5'/3' ends (Default:"+stringify(bpToDecrease)+") "+"\n");
 			      
 			      
 
@@ -48,15 +45,26 @@ int main (int argc, char *argv[]) {
 	return 1;
     }
 
+    //all but last 2
+    for(int i=1;i<(argc-2);i++){ 
 
-    if(argc != 3){
+        if(string(argv[i]) == "-n"){
+	    bpToDecrease =destringify<int>(argv[i+1]);
+            i++;
+            continue;
+	}
+
+    }
+
+
+
+    if(argc < 3){
 	cerr<<"Error: Must specify the input and output BAM files";
 	return 1;
     }
 
     string inbamFile =argv[argc-2];
     string outbamFile=argv[argc-1];
-
 
     BamReader reader;
 
@@ -90,7 +98,7 @@ int main (int argc, char *argv[]) {
 
 		if(al.IsReverseStrand()){ //is reverse complemented, we decrease the last As regardless of first or second mate
 		    
-		    for(int indexToCheck=(al.QueryBases.length()-1);indexToCheck>(al.QueryBases.length()-6);indexToCheck--){
+		    for(int indexToCheck=(al.QueryBases.length()-1);indexToCheck>( (al.QueryBases.length()-1)-bpToDecrease);indexToCheck--){
 			if(toupper(al.QueryBases[indexToCheck]) == 'A'){
 			    al.Qualities[indexToCheck]=char(offset+baseQualForDeam);
 			}
@@ -98,7 +106,7 @@ int main (int argc, char *argv[]) {
 
 		}else{ //if not reverse complemented, we decrease the first 5 Ts regardless of first or second mate
 
-		    for(int indexToCheck=0;indexToCheck<5;indexToCheck++){
+		    for(int indexToCheck=0;indexToCheck<bpToDecrease;indexToCheck++){
 			if(toupper(al.QueryBases[indexToCheck]) == 'T'){
 			    al.Qualities[indexToCheck]=char(offset+baseQualForDeam);
 			}
@@ -112,16 +120,16 @@ int main (int argc, char *argv[]) {
 
 
 		if(al.QueryBases.length() <= 5){
-		    cerr << "We do not reads with less than 5bp" << endl;
+		    cerr << "We do not process reads with less than 5bp" << endl;
 		    return 1;
 		}
-		for(int indexToCheck=0;indexToCheck<5;indexToCheck++){
+		for(int indexToCheck=0;indexToCheck<bpToDecrease;indexToCheck++){
 		    if(toupper(al.QueryBases[indexToCheck]) == 'T'){
 			al.Qualities[indexToCheck]=char(offset+baseQualForDeam);
 		    }
 		}
 
-		for(int indexToCheck=(al.QueryBases.length()-1);indexToCheck>(al.QueryBases.length()-6);indexToCheck--){
+		for(int indexToCheck=(al.QueryBases.length()-1);indexToCheck>( (al.QueryBases.length()-1) -bpToDecrease);indexToCheck--){
 		    if(toupper(al.QueryBases[indexToCheck]) == 'A'){
 			al.Qualities[indexToCheck]=char(offset+baseQualForDeam);
 		    }

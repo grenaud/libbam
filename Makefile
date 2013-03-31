@@ -1,98 +1,130 @@
 
-CXX      = g++
-BAMTOOLS= /mnt/solexa/bin/bamtools-1.0.2/
+CXX      = g++ 
+BAMTOOLS= /mnt/solexa/bin/bamtools-2.2.2/
 LIBGAB   = /home/gabriel_renaud/lib/
 
-CXXFLAGS  = -lm -O3 -Wall -I${LIBGAB}   -I/include/ -c
-LDFLAGS  += -lbamtools
-LDLIBS   += ${BAMTOOLS}/lib/libbamtools.a -lm -lz
+CXXFLAGS  = -lm -O3 -Wall -I${LIBGAB} -I${LIBGAB}/VCFparser/ -I${LIBGAB}/VCFparser/gzstream/  -I/home/gabriel_renaud/Software/tabix-0.2.6/ -I${BAMTOOLS}/include/ -c
+#LDFLAGS  += -lbamtools
+LDLIBS   += ${BAMTOOLS}/lib/libbamtools.a ${LIBGAB}/PutProgramInHeader.o  -lm -lz
 
 
-all: allFailqc allPassqc cutDeaminated decrQualDeaminated decrQualDeaminatedDoubleStranded failQualPair filterDeaminated removeRG retrieveRG subSampleBAM transBAM transBAMperRead  filterHighEditDistance.o filterHighEditDistance
+all: allFailqc allPassqc cutDeaminated decrQualDeaminated decrQualDeaminatedDoubleStranded failQualPair filterDeaminated filterDeaminatedVCF removeRG retrieveRG subSampleBAM transBAM transBAMperRead  filterHighEditDistance.o filterHighEditDistance  editDist removeUnalignedANDWrongCigar dumpLoneMates retrieveMapped_single_and_ProperlyPair setAsUnpaired compareRG  filterDeaminatedFasta filterDeaminatedVCFpreload filterDeaminatedVCFpreload1000g filterDeaminatedpreload1000g subsamplebamFixedNumber addRGinHeaderHack splitByChr filterEditDist bamCat
 
 
+%.o: %.cpp
+	${CXX} ${CXXFLAGS} $^ -o $@
 
 
-allFailqc.o: allFailqc.cpp
-	${CXX} ${CXXFLAGS} allFailqc.cpp
+compareRG: compareRG.o  ${LIBGAB}utils.o
+	${CXX} -o $@ $^ $(LDLIBS) 
+
+filterEditDist: filterEditDist.o  ${LIBGAB}utils.o
+	${CXX} -o $@ $^ $(LDLIBS) 
+
+
+bamCat: bamCat.o  ${LIBGAB}utils.o
+	${CXX} -o $@ $^ $(LDLIBS) 
+
+
+dumpLoneMates: dumpLoneMates.o  ${LIBGAB}utils.o
+	${CXX} -o $@ $^ $(LDLIBS) 
+
+
+removeUnalignedANDWrongCigar: removeUnalignedANDWrongCigar.o  ${LIBGAB}utils.o
+	${CXX} -o $@ $^ $(LDLIBS) 
+
+
+retrieveMapped_single_and_ProperlyPair: retrieveMapped_single_and_ProperlyPair.o  ${LIBGAB}utils.o
+	${CXX} -o $@ $^ $(LDLIBS) 
+
+
+editDist: editDist.o  ${LIBGAB}utils.o
+	${CXX} -o $@ $^ $(LDLIBS) 
+
 
 allFailqc: allFailqc.o  ${LIBGAB}utils.o
-	${CXX} $(LDFLAGS) -o $@ $^ $(LDLIBS)
+	${CXX} -o $@ $^ $(LDLIBS) 
 
-allPassqc.o: allPassqc.cpp
-	${CXX} ${CXXFLAGS} allPassqc.cpp
+
+setAsUnpaired: setAsUnpaired.o  ${LIBGAB}utils.o
+	${CXX} -o $@ $^ $(LDLIBS) 
+
+
 
 allPassqc: allPassqc.o  ${LIBGAB}utils.o
-	${CXX} $(LDFLAGS) -o $@ $^ $(LDLIBS)
+	${CXX} -o $@ $^ $(LDLIBS) 
 
-cutDeaminated.o: cutDeaminated.cpp
-	${CXX} ${CXXFLAGS} cutDeaminated.cpp
+
+splitByChr: splitByChr.o  ${LIBGAB}utils.o
+	${CXX} -o $@ $^ $(LDLIBS) 
 
 cutDeaminated: cutDeaminated.o  ${LIBGAB}utils.o
-	${CXX} $(LDFLAGS) -o $@ $^ $(LDLIBS)
+	${CXX} -o $@ $^ $(LDLIBS) 
 
-decrQualDeaminated.o: decrQualDeaminated.cpp
-	${CXX} ${CXXFLAGS} decrQualDeaminated.cpp
 
 decrQualDeaminated: decrQualDeaminated.o  ${LIBGAB}utils.o
-	${CXX} $(LDFLAGS) -o $@ $^ $(LDLIBS)
+	${CXX} -o $@ $^ $(LDLIBS) 
 
-decrQualDeaminatedDoubleStranded.o: decrQualDeaminatedDoubleStranded.cpp
-	${CXX} ${CXXFLAGS} decrQualDeaminatedDoubleStranded.cpp
 
 decrQualDeaminatedDoubleStranded: decrQualDeaminatedDoubleStranded.o  ${LIBGAB}utils.o
-	${CXX} $(LDFLAGS) -o $@ $^ $(LDLIBS)
+	${CXX} -o $@ $^ $(LDLIBS) 
 
 failQualPair.o: failQualPair.cpp
 	${CXX} ${CXXFLAGS} failQualPair.cpp
 
 failQualPair: failQualPair.o  ${LIBGAB}utils.o
-	${CXX} $(LDFLAGS) -o $@ $^ $(LDLIBS)
+	${CXX} -o $@ $^ $(LDLIBS) 
 
-filterHighEditDistance.o: filterHighEditDistance.cpp
-	${CXX} ${CXXFLAGS} filterHighEditDistance.cpp
 
 filterHighEditDistance: filterHighEditDistance.o  ${LIBGAB}utils.o
-	${CXX} $(LDFLAGS) -o $@ $^ $(LDLIBS)
+	${CXX} -o $@ $^ $(LDLIBS) 
 
-filterDeaminated.o: filterDeaminated.cpp
-	${CXX} ${CXXFLAGS} filterDeaminated.cpp
 
 filterDeaminated: filterDeaminated.o  ${LIBGAB}utils.o ${LIBGAB}ReconsReferenceBAM.o
-	${CXX} $(LDFLAGS) -o $@ $^ $(LDLIBS)
+	${CXX} -o $@ $^ $(LDLIBS) 
 
-removeRG.o: removeRG.cpp
-	${CXX} ${CXXFLAGS} removeRG.cpp
+
+filterDeaminatedVCF: filterDeaminatedVCF.o  ${LIBGAB}utils.o ${LIBGAB}/VCFparser/VCFreader.o ${LIBGAB}/VCFparser/gzstream/libgzstream.a  ${LIBGAB}/VCFparser/SimpleVCF.o ${LIBGAB}/VCFparser/ReadTabix.o ${LIBGAB}ReconsReferenceBAM.o /home/gabriel_renaud/Software/tabix-0.2.6/libtabix.a
+	${CXX} -o $@ $^ $(LDLIBS) 
+
+filterDeaminatedVCFpreload: filterDeaminatedVCFpreload.o  ${LIBGAB}utils.o ${LIBGAB}/VCFparser/VCFreader.o ${LIBGAB}/VCFparser/gzstream/libgzstream.a  ${LIBGAB}/VCFparser/SimpleVCF.o ${LIBGAB}/VCFparser/ReadTabix.o ${LIBGAB}ReconsReferenceBAM.o /home/gabriel_renaud/Software/tabix-0.2.6/libtabix.a 
+	${CXX} -o $@ $^ $(LDLIBS) 
+
+filterDeaminatedVCFpreload1000g: filterDeaminatedVCFpreload1000g.o  ${LIBGAB}utils.o ${LIBGAB}/VCFparser/VCFreader.o ${LIBGAB}/VCFparser/gzstream/libgzstream.a  ${LIBGAB}/VCFparser/SimpleVCF.o ${LIBGAB}/VCFparser/ReadTabix.o ${LIBGAB}ReconsReferenceBAM.o /home/gabriel_renaud/Software/tabix-0.2.6/libtabix.a
+	${CXX} -o $@ $^ $(LDLIBS) 
+
+filterDeaminatedpreload1000g: filterDeaminatedpreload1000g.o  ${LIBGAB}utils.o ${LIBGAB}/VCFparser/VCFreader.o ${LIBGAB}/VCFparser/gzstream/libgzstream.a  ${LIBGAB}/VCFparser/SimpleVCF.o ${LIBGAB}/VCFparser/ReadTabix.o ${LIBGAB}ReconsReferenceBAM.o /home/gabriel_renaud/Software/tabix-0.2.6/libtabix.a
+	${CXX} -o $@ $^ $(LDLIBS) 
+
+filterDeaminatedFasta: filterDeaminatedFasta.o  ${LIBGAB}utils.o ${LIBGAB}ReconsReferenceBAM.o ${LIBGAB}VCFparser/FastQParser.o ${LIBGAB}VCFparser/FastQObj.o ${LIBGAB}/VCFparser/gzstream/libgzstream.a 
+	${CXX} -o $@ $^ $(LDLIBS) 
 
 removeRG: removeRG.o  ${LIBGAB}utils.o
-	${CXX} $(LDFLAGS) -o $@ $^ $(LDLIBS)
+	${CXX} -o $@ $^ $(LDLIBS) 
 
-retrieveRG.o: retrieveRG.cpp
-	${CXX} ${CXXFLAGS} retrieveRG.cpp
+addRGinHeaderHack: addRGinHeaderHack.o  ${LIBGAB}utils.o
+	${CXX} -o $@ $^ $(LDLIBS) 
+
 
 retrieveRG: retrieveRG.o  ${LIBGAB}utils.o
-	${CXX} $(LDFLAGS) -o $@ $^ $(LDLIBS)
+	${CXX} -o $@ $^ $(LDLIBS) 
 
-subSampleBAM.o: subSampleBAM.cpp
-	${CXX} ${CXXFLAGS} subSampleBAM.cpp
 
 subSampleBAM: subSampleBAM.o  ${LIBGAB}utils.o
-	${CXX} $(LDFLAGS) -o $@ $^ $(LDLIBS)
+	${CXX} -o $@ $^ $(LDLIBS) 
 
-transBAM.o: transBAM.cpp
-	${CXX} ${CXXFLAGS} transBAM.cpp
+subsamplebamFixedNumber: subsamplebamFixedNumber.o  ${LIBGAB}utils.o
+	${CXX} -o $@ $^ $(LDLIBS) 
 
 transBAM: transBAM.o  ${LIBGAB}utils.o ${LIBGAB}ReconsReferenceBAM.o
-	${CXX} $(LDFLAGS) -o $@ $^ $(LDLIBS)
+	${CXX} -o $@ $^ $(LDLIBS) 
 
-transBAMperRead.o: transBAMperRead.cpp
-	${CXX} ${CXXFLAGS} transBAMperRead.cpp
 
 transBAMperRead: transBAMperRead.o  ${LIBGAB}utils.o ${LIBGAB}ReconsReferenceBAM.o
-	${CXX} $(LDFLAGS) -o $@ $^ $(LDLIBS)
+	${CXX} -o $@ $^ $(LDLIBS) 
 
 
 
 
 clean :
-	rm -f  allFailqc allPassqc cutDeaminated decrQualDeaminated decrQualDeaminatedDoubleStranded failQualPair filterDeaminated getCtrlReadsBAM removeRG retrieveRG subSampleBAM transBAM transBAMperRead ${LIBGAB}ReconsReferenceBAM.o filterHighEditDistance.o filterHighEditDistance
+	rm -f  allFailqc allPassqc cutDeaminated decrQualDeaminated decrQualDeaminatedDoubleStranded failQualPair filterDeaminated filterDeaminatedVCF getCtrlReadsBAM removeRG retrieveRG subSampleBAM transBAM transBAMperRead ${LIBGAB}ReconsReferenceBAM.o filterHighEditDistance.o filterHighEditDistance  removeUnalignedANDWrongCigar.o removeUnalignedANDWrongCigar retrieveMapped_single_and_ProperlyPair.o retrieveMapped_single_and_ProperlyPair setAsUnpaired filterDeaminatedFasta  compareRG *.o filterDeaminatedFasta  compareRG filterDeaminatedVCFpreload filterDeaminatedVCFpreload.o subsamplebamFixedNumber addRGinHeaderHack splitByChr  filterDeaminatedVCFpreload1000g filterDeaminatedpreload1000g bamCat

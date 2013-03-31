@@ -24,7 +24,7 @@ int main (int argc, char *argv[]) {
     	(argc== 2 && string(argv[1]) == "-h") ||
     	(argc== 2 && string(argv[1]) == "-help") ||
     	(argc== 2 && string(argv[1]) == "--help") ){
-	 cout<<"Usage:allPassqc [in bam] [outbam]"<<endl<<"this program takes flags all sequences in a bam file as passing the  QC"<<endl;
+	 cout<<"Usage:setAsUnpaired [in bam] [outbam]"<<endl<<"this program takes flags all paired sequences as singles"<<endl;
     	return 1;
     }
 
@@ -40,8 +40,6 @@ int main (int argc, char *argv[]) {
      }
     const SamHeader header = reader.GetHeader();
     const RefVector references = reader.GetReferenceData();
-    // cout<<header.ToString()<<endl;
-    // return 1;
     if ( !writer.Open(bamFileOUT,header,references) ) {
     	cerr << "Could not open output BAM file "<<bamFileOUT << endl;
     	return 1;
@@ -50,9 +48,15 @@ int main (int argc, char *argv[]) {
     BamAlignment al;
  
     while ( reader.GetNextAlignment(al) ) {
+	if(al.IsMapped()){
+	    cerr << "Cannot yet handle mapped reads " << endl;
+	    return 1;
+	}
 
-	al.SetIsFailedQC(false);
-	writer.SaveAlignment(al);	    
+	
+	al.SetIsPaired (false);
+	
+	writer.SaveAlignment(al);    
 
     } //while al
 

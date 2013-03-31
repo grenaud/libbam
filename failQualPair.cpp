@@ -51,10 +51,10 @@ int main (int argc, char *argv[]) {
  
     while ( reader.GetNextAlignment(al) ) {
 
-	if(al.HasTag("NM") || al.HasTag("MD")  ){
-	    cerr << "Reads should not be aligned" << endl;
-	    return 1;
-	}
+	// if(al.HasTag("NM") || al.HasTag("MD")  ){
+	//     cerr << "Reads should not be aligned" << endl;
+	//     return 1;
+	// }
 
 
 	if(al.IsPaired() && 
@@ -66,7 +66,7 @@ int main (int argc, char *argv[]) {
 	    if(al.IsPaired() && 
 	       !al2Null){
 		if(al.Name != al2.Name ){
-		    cerr << "Seq#1 has a different id than seq #2, exiting " << endl;
+		    cerr << "Seq#1 "<<al.Name<<" has a different id than seq #2 "<<al2.Name<<", exiting " << endl;
 		    return 1;
 		} 
 

@@ -38,7 +38,7 @@ int main (int argc, char *argv[]) {
 	return 1;
     }
 
-    double  fraction       = atof  (argv[1]);
+    double  fraction      = atof  (argv[1]);
     string bamfiletopen   = string(argv[2]);
     string outputFilename = string(argv[3]);
     BamReader reader;

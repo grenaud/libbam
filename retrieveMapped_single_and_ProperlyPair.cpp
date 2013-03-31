@@ -20,44 +20,57 @@ using namespace BamTools;
 
 int main (int argc, char *argv[]) {
 
-     if( (argc== 1) ||
+    if( (argc== 1) ||
     	(argc== 2 && string(argv[1]) == "-h") ||
     	(argc== 2 && string(argv[1]) == "-help") ||
     	(argc== 2 && string(argv[1]) == "--help") ){
-	 cout<<"Usage:allPassqc [in bam] [outbam]"<<endl<<"this program takes flags all sequences in a bam file as passing the  QC"<<endl;
-    	return 1;
+	cout<<"Usage:removeRG [in bam] [outbam]"<<endl<<"This program removes the RG field"<<endl;
+	return 1;
     }
 
-     string bamfiletopen = string(argv[1]);
-     string bamFileOUT   = string(argv[2]);
+    string bamfiletopen = string(argv[1]);
+    string bamFileOUT   = string(argv[2]);
 
-     BamReader reader;
-     BamWriter writer;
+    BamReader reader;
+    BamWriter writer;
 
-     if ( !reader.Open(bamfiletopen) ) {
+    if ( !reader.Open(bamfiletopen) ) {
     	cerr << "Could not open input BAM files." << endl;
     	return 1;
-     }
+    }
     const SamHeader header = reader.GetHeader();
     const RefVector references = reader.GetReferenceData();
-    // cout<<header.ToString()<<endl;
-    // return 1;
     if ( !writer.Open(bamFileOUT,header,references) ) {
     	cerr << "Could not open output BAM file "<<bamFileOUT << endl;
     	return 1;
     }
 
     BamAlignment al;
- 
-    while ( reader.GetNextAlignment(al) ) {
+    unsigned total=0;
+    unsigned kept=0;
 
-	al.SetIsFailedQC(false);
-	writer.SaveAlignment(al);	    
+    while ( reader.GetNextAlignment(al) ) {
+	total++;
+
+	if(al.IsPaired() ){
+	    if(!al.IsProperPair() )
+		continue;
+	    if(!al.IsMateMapped() )
+		continue;
+	}
+
+	if(!al.IsMapped()){
+	    continue;
+	}
+
+	kept++;
+	writer.SaveAlignment(al);
 
     } //while al
 
     reader.Close();
     writer.Close();
+    cerr<<"retrieveMapped_single_and_ProperlyPair: out of "<<total<<" sequences we kept "<<kept<<" sequences "<<endl;
 
     return 0;
 }

@@ -6,6 +6,7 @@
 #include "api/BamReader.h"
 #include "api/BamWriter.h"
 #include "api/BamAux.h"
+#include "PutProgramInHeader.h"
 
 using namespace std;
 using namespace BamTools;
@@ -23,8 +24,8 @@ const int offset=33;
 
 int main (int argc, char *argv[]) {
 
-    bool mapped  =false;
-    bool unmapped=false;
+    // bool mapped  =false;
+    // bool unmapped=false;
 
     const string usage=string(string(argv[0])+" [options] input.bam out.bam"+"\n\n"+
 			      "This program takes a BAM file as input and produces\n"+
@@ -72,6 +73,10 @@ int main (int argc, char *argv[]) {
     string inbamFile =argv[argc-2];
     string outbamFile=argv[argc-1];
 
+    if(inbamFile == outbamFile){
+	cerr<<"Input and output files are the same"<<endl;
+	return 1;    
+    }
     // if(!mapped && !unmapped){
     // 	cerr << "Please specify whether you reads are mapped or unmapped" << endl;
     // 	return 1;
@@ -90,7 +95,16 @@ int main (int argc, char *argv[]) {
 
 
     vector<RefData>  testRefData=reader.GetReferenceData();
-    const SamHeader header = reader.GetHeader();
+    SamHeader header = reader.GetHeader();
+    string pID          = "decrQualDeaminated";   
+    string pName        = "decrQualDeaminated";   
+    string pCommandLine = "";
+    for(int i=0;i<(argc);i++){
+        pCommandLine += (string(argv[i])+" ");
+    }
+    putProgramInHeader(&header,pID,pName,pCommandLine);
+
+
     const RefVector references = reader.GetReferenceData();
 
     BamWriter writer;
@@ -226,7 +240,8 @@ int main (int argc, char *argv[]) {
 
     reader.Close();
     writer.Close();
-   
+
+    cerr<<"Program terminated gracefully"<<endl;   
     return 0;
 }
 
