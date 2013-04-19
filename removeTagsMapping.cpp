@@ -67,8 +67,7 @@ int main (int argc, char *argv[]) {
     while ( reader.GetNextAlignment(al) ) {
 	//deleting tag data
 	al.TagData="";
-	// cout<<al.InsertSize<<endl;
-	// exit(1);
+
 	//reset the flag
 	if(al.IsPaired()){
 	    if(al.IsFirstMate()){
@@ -89,6 +88,8 @@ int main (int argc, char *argv[]) {
 	al.InsertSize=0;
 	//no cigar
 	al.CigarData.clear();
+	//no mapping quality 
+	al.MapQuality=0;
 
 	writer.SaveAlignment(al);
     }
