@@ -57,9 +57,9 @@ int main (int argc, char *argv[]) {
 
     //no @SQ
     myHeader.Sequences.Clear();
+    vector< RefData > 	emptyRefVector;
 
-
-    if( !writer.Open(bamfiletwrite,myHeader,reader.GetReferenceData() ) ) {
+    if( !writer.Open(bamfiletwrite,myHeader,emptyRefVector ) ) {
     	cerr << "Could not open output BAM file  "<<bamfiletwrite << endl;
     	return 1;	
     }
