@@ -57,7 +57,7 @@ int main (int argc, char *argv[]) {
 
 
 
-    if( !writer.Open(bamfiletwrite,reader.GetHeader(),reader.GetReferenceData() ) ) {
+    if( !writer.Open(bamfiletwrite,myHeader,reader.GetReferenceData() ) ) {
     	cerr << "Could not open output BAM file  "<<bamfiletwrite << endl;
     	return 1;	
     }
