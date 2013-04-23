@@ -79,29 +79,17 @@ int main (int argc, char *argv[]) {
     unsigned int total=0;
     while ( reader.GetNextAlignment(al) ) {
 
-	// al.SetIsFailedQC(false);
-	// writer.SaveAlignment(al);
-	// if(al.IsMapped () ){
-	//     if(rg2Tally.find(refData[al.RefID].RefName) == rg2Tally.end()){ //new
-	// 	rg2Tally[refData[al.RefID].RefName] = new  BamWriter();
-	// 	if ( !rg2Tally[refData[al.RefID].RefName]->Open(bamDirOutPrefix+"."+refData[al.RefID].RefName+".bam",header,references) ) {
-	// 	    cerr     << "Could not open output BAM file "<< bamDirOutPrefix<<"."<<refData[al.RefID].RefName<<".bam" << endl;
-	// 	    return 1;
-	// 	}
-	
-	//     }else{
-	// 	rg2Tally[refData[al.RefID].RefName]->SaveAlignment(al);
-	//     }
-	// }else{
-	//     unmapped.SaveAlignment(al);
-	// }
+	if(!al.IsMapped () )//do not care about unmapped
+	    continue;
+
 	if(al.HasTag("RG")){
 	    string rgTag;
 	    al.GetTag("RG",rgTag);
 	    //cout<<rgTag<<endl;
 	    if(rg2Tally.find(rgTag) == rg2Tally.end()){ //new
-		cerr<<"Unfound new RG "<<rgTag<<endl;
-		return 1;
+		cerr<<"Unfound new RG, creating it: "<<rgTag<<endl;
+		rg2Tally[rgTag] =  vector<unsigned int> (references.size(),0);	
+		rg2Tally[rgTag][al.RefID]++;
 	    }else{
 		rg2Tally[rgTag][al.RefID]++;
 	    }
