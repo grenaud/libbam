@@ -55,6 +55,8 @@ int main (int argc, char *argv[]) {
     }
     putProgramInHeader(&myHeader,pID,pName,pCommandLine,returnGitHubVersion(string(argv[0]),"."));
 
+    //no @SQ
+    myHeader.Sequences.Clear();
 
 
     if( !writer.Open(bamfiletwrite,myHeader,reader.GetReferenceData() ) ) {
