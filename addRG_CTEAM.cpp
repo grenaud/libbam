@@ -58,6 +58,7 @@ int main (int argc, char *argv[]) {
     for(unsigned int lane=1;lane<=8;lane++){
 	SamReadGroup srg ( RGGROUP+"_"+stringify(lane) );
 	srg.Sample   = RGGROUP;
+        srgd.Add( srg );  
     }
 
     myHeader.ReadGroups=srgd;
