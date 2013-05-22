@@ -8,7 +8,7 @@ CXXFLAGS  = -lm -O3 -Wall -I${LIBGAB} -I${LIBGAB}/VCFparser/ -I${LIBGAB}/VCFpars
 LDLIBS   += ${BAMTOOLS}/lib/libbamtools.a ${LIBGAB}/PutProgramInHeader.o  -lm -lz
 
 
-all: allFailqc allPassqc cutDeaminated decrQualDeaminated decrQualDeaminatedDoubleStranded failQualPair filterDeaminated filterDeaminatedVCF removeRG retrieveRG subSampleBAM transBAM transBAMperRead  filterHighEditDistance.o filterHighEditDistance  editDist removeUnalignedANDWrongCigar dumpLoneMates retrieveMapped_single_and_ProperlyPair setAsUnpaired compareRG  filterDeaminatedFasta filterDeaminatedVCFpreload filterDeaminatedVCFpreload1000g filterDeaminatedpreload1000g subsamplebamFixedNumber addRGinHeaderHack splitByChr splitByRG filterEditDist bamCat tallyByRG addRG removeTagsMapping addRG_CTEAM
+all: allFailqc allPassqc cutDeaminated decrQualDeaminated decrQualDeaminatedDoubleStranded failQualPair filterDeaminated filterDeaminatedVCF removeRG retrieveRG subSampleBAM transBAM transBAMperRead  filterHighEditDistance.o filterHighEditDistance  editDist removeUnalignedANDWrongCigar dumpLoneMates retrieveMapped_single_and_ProperlyPair setAsUnpaired compareRG  filterDeaminatedFasta filterDeaminatedVCFpreload filterDeaminatedVCFpreload1000g filterDeaminatedpreload1000g subsamplebamFixedNumber addRGinHeaderHack splitByChr splitByRG filterEditDist bamCat tallyByRG addRG removeTagsMapping addRG_CTEAM baseQualScorePerCycle
 
 
 %.o: %.cpp
@@ -95,7 +95,7 @@ filterHighEditDistance: filterHighEditDistance.o  ${LIBGAB}utils.o
 	${CXX} -o $@ $^ $(LDLIBS) 
 
 
-filterDeaminated: filterDeaminated.o  ${LIBGAB}utils.o ${LIBGAB}ReconsReferenceBAM.o
+baseQualScorePerCycle: baseQualScorePerCycle.o  ${LIBGAB}utils.o ${LIBGAB}ReconsReferenceBAM.o
 	${CXX} -o $@ $^ $(LDLIBS) 
 
 

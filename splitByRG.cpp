@@ -111,8 +111,22 @@ int main (int argc, char *argv[]) {
 		rg2BamWriter[rgTag]->SaveAlignment(al);	    	   
 	    }
 	}else{
-	    cerr << "Cannot get RG tag for " << al.Name<<endl;
-	    return 1;
+	    string rgTag="unknown";	    
+	    //cout<<rgTag<<endl;
+	    if(rg2BamWriter.find(rgTag) == rg2BamWriter.end()){ //new
+		cerr<<"Found new RG "<<rgTag<<endl;
+		rg2BamWriter[rgTag] = new  BamWriter();
+	 	if ( !rg2BamWriter[rgTag]->Open(bamDirOutPrefix+"."+rgTag+".bam",header,references) ) {
+	 	    cerr     << "Could not open output BAM file "<< bamDirOutPrefix<<"."<<rgTag<<".bam" << endl;
+	 	    return 1;
+	 	}
+		rg2BamWriter[rgTag]->SaveAlignment(al);	    	   
+	    }else{
+		rg2BamWriter[rgTag]->SaveAlignment(al);	    	   
+	    }
+
+	    // cerr << "Cannot get RG tag for " << al.Name<<endl;
+	    // return 1;
 	}
 
 	total++;
