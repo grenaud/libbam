@@ -8,6 +8,7 @@
 #include "api/BamAux.h"
 
 #include "utils.h"
+#include "PutProgramInHeader.h"
 
 using namespace std;
 using namespace BamTools;
@@ -66,6 +67,7 @@ int main (int argc, char *argv[]) {
     string inbamFile =argv[argc-2];
     string outbamFile=argv[argc-1];
 
+
     BamReader reader;
 
     if ( !reader.Open(inbamFile) ) {
@@ -73,9 +75,18 @@ int main (int argc, char *argv[]) {
     	return 1;
     }
 
+    SamHeader header = reader.GetHeader();
+    string pID          = "decrQualDeaminatedDoubleStranded";   
+    string pName        = "decrQualDeaminatedDoubleStranded";   
+    string pCommandLine = "";
+    for(int i=0;i<(argc);i++){
+        pCommandLine += (string(argv[i])+" ");
+    }
+    putProgramInHeader(&header,pID,pName,pCommandLine);
+
 
     vector<RefData>  testRefData=reader.GetReferenceData();
-    const SamHeader header = reader.GetHeader();
+    // const SamHeader header = reader.GetHeader();
     const RefVector references = reader.GetReferenceData();
 
     BamWriter writer;

@@ -13,6 +13,7 @@
 #include "api/BamWriter.h"
 #include "api/BamAux.h"
 #include "utils.h"
+#include "PutProgramInHeader.h"
 
 using namespace std;
 using namespace BamTools;
@@ -47,7 +48,16 @@ int main (int argc, char *argv[]) {
     	cerr << "Could not open input BAM files." << endl;
     	return 1;
      }
-    const SamHeader header = reader.GetHeader();
+
+    SamHeader header = reader.GetHeader();
+    string pID          = "splitByChr";   
+    string pName        = "splitByChr";   
+    string pCommandLine = "";
+    for(int i=0;i<(argc);i++){
+        pCommandLine += (string(argv[i])+" ");
+    }
+    putProgramInHeader(&header,pID,pName,pCommandLine);
+    
     const RefVector references = reader.GetReferenceData();
     vector<RefData>  refData=reader.GetReferenceData();
 
@@ -64,7 +74,7 @@ int main (int argc, char *argv[]) {
 
 
     BamAlignment al;
-    unsigned int total=0;
+    uint64_t total=0;
     while ( reader.GetNextAlignment(al) ) {
 
 	// al.SetIsFailedQC(false);
