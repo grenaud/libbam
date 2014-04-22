@@ -52,9 +52,19 @@ int main (int argc, char *argv[]) {
     }
     putProgramInHeader(&myHeader,pID,pName,pCommandLine,returnGitHubVersion(string(argv[0]),"."));
 
+    SamReadGroupDictionary  srgd;
+    //for(unsigned int lane=1;lane<=8;lane++){
+    SamReadGroup srg ( RGGROUP );
+    srg.Sample   = RGGROUP;
+    srgd.Add( srg );  
+    //}
+
+    myHeader.ReadGroups=srgd;
 
 
-    if( !writer.Open(bamfiletwrite,reader.GetHeader(),reader.GetReferenceData() ) ) {
+
+
+    if( !writer.Open(bamfiletwrite,myHeader,reader.GetReferenceData() ) ) {
     	cerr << "Could not open output BAM file  "<<bamfiletwrite << endl;
     	return 1;	
     }

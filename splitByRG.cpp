@@ -24,7 +24,7 @@ int main (int argc, char *argv[]) {
     	(argc== 2 && string(argv[1]) == "-h") ||
     	(argc== 2 && string(argv[1]) == "-help") ||
     	(argc== 2 && string(argv[1]) == "--help") ){
-	 cerr<<"Usage:splitByRG [in bam] [out prefix]"<<endl<<"this program creates one bam file per RG in the with the outprefix\nFor example splitByChr in.bam out will create\nout.chr1.bam\nout.chr2.bam\n"<<endl;
+	 cerr<<"Usage:splitByRG [in bam] [out prefix]"<<endl<<"this program creates one bam file per RG in the with the outprefix\nFor example splitByRG in.bam out will create\nout.rg1.bam\nout.rg2.bam\n"<<endl;
     	return 1;
     }
 

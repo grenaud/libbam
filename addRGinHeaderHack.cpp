@@ -78,6 +78,7 @@ int main (int argc, char *argv[]) {
 	}else{
 	    srg.Sample   = sampleName;
 	}
+	srg.SequencingTechnology = "ILLUMINA";
         srgd.Add( srg );  
     }
 
