@@ -21,8 +21,7 @@ int main (int argc, char *argv[]) {
     int length=0;
     const string usage=string(string(argv[0])+" [options] input.bam out.bam"+"\n\n"+
 			      "This program takes a BAM file as input and produces\n"+
-			      "another where the putative deaminated bases have\n"+
-			      "have been cut\n"+
+			      "another where the first l bases have been cut\n"+
 			      "\n"+
 			      "Options:\n"+
 			      "\t"+"-l" +"\n\t\t"+"Cut this length (Default "+stringify(length)+")"+"\n"

@@ -26,7 +26,7 @@ int main (int argc, char *argv[]) {
     	(argc== 2 && string(argv[1]) == "-h") ||
     	(argc== 2 && string(argv[1]) == "-help") ||
     	(argc== 2 && string(argv[1]) == "--help") ){
-	cout<<"Usage:removeRG [in bam] [outbam]"<<endl<<"This program removes the RG field"<<endl;
+	cout<<"Usage:removeRG [in bam] [outbam]"<<endl<<"This program keeps reads that are mapped and single or properly mapped"<<endl;
 	return 1;
     }
 

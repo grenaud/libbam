@@ -46,7 +46,10 @@ int main (int argc, char *argv[]) {
 
 	 if(al.IsPaired()){
 	     if( al.IsFirstMate()  ){
-		 cout<<al.InsertSize<<endl;
+		 if(al.InsertSize > 0)
+		     cout<<al.InsertSize<<endl;
+		 else
+		     cout<<-1.0*al.InsertSize<<endl;
 	     }
 	 }else{
 	     cout<<al.Length<<endl;

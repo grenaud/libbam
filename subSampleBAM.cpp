@@ -43,7 +43,7 @@ int main (int argc, char *argv[]) {
     string outputFilename = string(argv[3]);
     BamReader reader;
 
-    if(fraction <= 0.0 || fraction >= 1.0){
+    if(fraction < 0.0 || fraction > 1.0){
     	cerr << "The fraction must be between 0 and 1" << endl;
     	return 1;
     }
