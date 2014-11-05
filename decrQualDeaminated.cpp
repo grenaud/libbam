@@ -26,14 +26,19 @@ int main (int argc, char *argv[]) {
 
     // bool mapped  =false;
     // bool unmapped=false;
+    int bpToDecrease5=1;
+    int bpToDecrease3=2;
 
     const string usage=string(string(argv[0])+" [options] input.bam out.bam"+"\n\n"+
-			      "This program takes a BAM file as input and produces\n"+
-			      "another where the putative deaminated bases have\n"+
-			      "a base quality score of "+intStringify(baseQualForDeam)+"\n"+
-			      "given an "+intStringify(offset)+" offset \n"+
+			      "\tThis program takes a BAM file as input and produces\n"+
+			      "\tanother where the putative deaminated bases have\n"+
+			      "\ta base quality score of "+intStringify(baseQualForDeam)+"\n"+
+			      "\tgiven an "+intStringify(offset)+" offset \n"+
 			      "\n"+
-			      "Options:\n");
+			      "\tOptions:\n"+
+			      "\t\t"+"-n5" +"\t\t\t"+"Decrease the nth bases surrounding the 5' ends (Default:"+stringify(bpToDecrease5)+") "+"\n"+
+			      "\t\t"+"-n3" +"\t\t\t"+"Decrease the nth bases surrounding the 3' ends (Default:"+stringify(bpToDecrease3)+") "+"\n"
+			      );
 			      // "\t"+"-u , --unmapped" +"\n\t\t"+"For an unmapped bam file"+"\n"+
 			      // "\t"+"-m , --mapped"   +"\n\t\t"+"For an mapped bam file"+"\n");
 			      
@@ -49,23 +54,25 @@ int main (int argc, char *argv[]) {
 	return 1;
     }
 
-    // for(int i=1;i<(argc-1);i++){ //all but the last arg
+    for(int i=1;i<(argc-2);i++){ //all but the last arg
 
-    // 	if(strcmp(argv[i],"-m") == 0 || strcmp(argv[i],"--mapped") == 0 ){
-    // 	    mapped=true;
-    // 	    continue;
-    // 	}
+    	if( string(argv[i]) == "-n5" ){
+	    bpToDecrease5 = destringify<int>(argv[i+1]);
+            i++;
+    	    continue;
+    	}
 
-    // 	if(strcmp(argv[i],"-u") == 0 || strcmp(argv[i],"--unmapped") == 0 ){
-    // 	    unmapped=true;
-    // 	    continue;
-    // 	}
+    	if( string(argv[i]) == "-n3" ){
+	    bpToDecrease3 = destringify<int>(argv[i+1]);
+            i++;
+    	    continue;
+    	}
        
-    // 	cerr<<"Unknown option "<<argv[i] <<" exiting"<<endl;
-    // 	return 1;
-    // }
+    	cerr<<"Unknown option "<<argv[i] <<" exiting"<<endl;
+    	return 1;
+    }
 
-    if(argc != 3){
+    if(argc < 3){
 	cerr<<"Error: Must specify the input and output BAM files";
 	return 1;
     }
@@ -128,19 +135,31 @@ int main (int argc, char *argv[]) {
 			    //return 1;
 			}
 			int indexToCheck;
-			//last
+
+			//5' of first mate reversed
 			indexToCheck=al.QueryBases.length()-1;
-			if(toupper(al.QueryBases[indexToCheck]) == 'A'){
-			    al.Qualities[indexToCheck]=char(offset+baseQualForDeam);
+			for(int i=0;i<bpToDecrease5;i++){			
+			    if(toupper(al.QueryBases[indexToCheck]) == 'A'){
+				al.Qualities[indexToCheck]=char(offset+baseQualForDeam);
+			    }
+			    indexToCheck=max(indexToCheck-1,0);
 			}
+
+			
 		    }else{
 			int indexToCheck;
-			//first base
+			//5' of first mate
 			indexToCheck=0;
-			if(toupper(al.QueryBases[indexToCheck]) == 'T'){
-			    al.Qualities[indexToCheck]=char(offset+baseQualForDeam);
+			for(int i=0;i<bpToDecrease5;i++){ //first base			
+			    if(toupper(al.QueryBases[indexToCheck]) == 'T'){
+				al.Qualities[indexToCheck]=char(offset+baseQualForDeam);
+			    }
+			    indexToCheck=min(indexToCheck+1,int(al.Qualities.size()));
 			}
+
 		    }
+
+
 		}else{ //3' end, need to check last two bases only
 		    if( al.IsSecondMate() ){
 			if(al.IsReverseStrand()){ //
@@ -150,31 +169,28 @@ int main (int argc, char *argv[]) {
 			    }
 			    int indexToCheck;
 
-			    //second to last
-			    indexToCheck=al.QueryBases.length()-2;
-			    if(toupper(al.QueryBases[indexToCheck]) == 'T'){
-				al.Qualities[indexToCheck]=char(offset+baseQualForDeam);
-			    }
-
-			    //last
+			    //3' of second mate reversed
 			    indexToCheck=al.QueryBases.length()-1;
-			    if(toupper(al.QueryBases[indexToCheck]) == 'T'){
-				al.Qualities[indexToCheck]=char(offset+baseQualForDeam);
+			    for(int i=0;i<bpToDecrease3;i++){			
+				if(toupper(al.QueryBases[indexToCheck]) == 'T'){
+				    al.Qualities[indexToCheck]=char(offset+baseQualForDeam);
+				}
+				indexToCheck=max(indexToCheck-1,0);
 			    }
+			    
 
 			}else{
 			    int indexToCheck;
-			    //first base
+			    
+			    //3' of second mate forward
 			    indexToCheck=0;
-			    if(toupper(al.QueryBases[indexToCheck]) == 'A'){
-				al.Qualities[indexToCheck]=char(offset+baseQualForDeam);
+			    for(int i=0;i<bpToDecrease3;i++){ //first base			
+				if(toupper(al.QueryBases[indexToCheck]) == 'A'){
+				    al.Qualities[indexToCheck]=char(offset+baseQualForDeam);
+				}
+				indexToCheck=min(indexToCheck+1,int(al.Qualities.size()));
 			    }
 
-			    //second base
-			    indexToCheck=1;
-			    if(toupper(al.QueryBases[indexToCheck]) == 'A'){
-				al.Qualities[indexToCheck]=char(offset+baseQualForDeam);
-			    }
 			}
 		    }else{
 			cerr << "Wrong state" << endl;
@@ -192,43 +208,51 @@ int main (int argc, char *argv[]) {
 		    }
 
 		    int indexToCheck;
-		    //first base
-		    indexToCheck=0;
-		    if(toupper(al.QueryBases[indexToCheck]) == 'A'){
-			al.Qualities[indexToCheck]=char(offset+baseQualForDeam);
-		    }
 
-		    //second base
-		    indexToCheck=1;
-		    if(toupper(al.QueryBases[indexToCheck]) == 'A'){
-			al.Qualities[indexToCheck]=char(offset+baseQualForDeam);
-		    }
-
-		    //last
+		    //5' of single read reversed
 		    indexToCheck=al.QueryBases.length()-1;
-		    if(toupper(al.QueryBases[indexToCheck]) == 'A'){
-			al.Qualities[indexToCheck]=char(offset+baseQualForDeam);
+		    for(int i=0;i<bpToDecrease5;i++){			
+			if(toupper(al.QueryBases[indexToCheck]) == 'A'){
+			    al.Qualities[indexToCheck]=char(offset+baseQualForDeam);
+			}
+			indexToCheck=max(indexToCheck-1,0);
 		    }
+
+		    //3' of single read reversed
+		    indexToCheck=0;
+		    for(int i=0;i<bpToDecrease3;i++){ //first base			
+			if(toupper(al.QueryBases[indexToCheck]) == 'A'){
+			    al.Qualities[indexToCheck]=char(offset+baseQualForDeam);
+			}
+			indexToCheck=min(indexToCheck+1,int(al.Qualities.size()));
+		    }
+
+		    
+
 		}else{
 
 		    int indexToCheck;
-		    //first base
+		    
+		    //5' of single read
 		    indexToCheck=0;
-		    if(toupper(al.QueryBases[indexToCheck]) == 'T'){
-			al.Qualities[indexToCheck]=char(offset+baseQualForDeam);
+		    for(int i=0;i<bpToDecrease5;i++){ //first base			
+			if(toupper(al.QueryBases[indexToCheck]) == 'T'){
+			    al.Qualities[indexToCheck]=char(offset+baseQualForDeam);
+			}
+			indexToCheck=min(indexToCheck+1,int(al.Qualities.size()));
 		    }
 
-		    //second to last
-		    indexToCheck=al.QueryBases.length()-2;
-		    if(toupper(al.QueryBases[indexToCheck]) == 'T'){
-			al.Qualities[indexToCheck]=char(offset+baseQualForDeam);
-		    }
 
-		    //last
+		    //3' of single read
 		    indexToCheck=al.QueryBases.length()-1;
-		    if(toupper(al.QueryBases[indexToCheck]) == 'T'){
-			al.Qualities[indexToCheck]=char(offset+baseQualForDeam);
+		    for(int i=0;i<bpToDecrease3;i++){			
+			if(toupper(al.QueryBases[indexToCheck]) == 'T'){
+			    al.Qualities[indexToCheck]=char(offset+baseQualForDeam);
+			}
+			indexToCheck=max(indexToCheck-1,0);
 		    }
+
+
 
 		}
 	    }//end of single end

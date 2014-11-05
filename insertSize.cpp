@@ -19,16 +19,32 @@ using namespace BamTools;
 
 
 int main (int argc, char *argv[]) {
+    bool onlyMapped=false;
 
-     if( (argc== 1) ||
-    	(argc== 2 && string(argv[1]) == "-h") ||
-    	(argc== 2 && string(argv[1]) == "-help") ||
-    	(argc== 2 && string(argv[1]) == "--help") ){
-	 cout<<"Usage:editDist [in bam]"<<endl<<"this program returns the NM field of all aligned reads"<<endl;
-	 return 1;
-     }
+    if( (argc== 1) ||
+	(argc== 2 && string(argv[1]) == "-h") ||
+	(argc== 2 && string(argv[1]) == "-help") ||
+	(argc== 2 && string(argv[1]) == "--help") ){
+	cout<<"Usage:"<<argv[0]<<"<options>   [in bam]"<<endl<<"this program returns the insert size of reads"<<endl;
+	cerr<<"Options:"<<endl;
+	cerr<<"\t-m\t\t\t\tUse mapped reads only"<<endl;
+	return 1;
+    }
+     
 
-     string bamfiletopen = string(argv[1]);
+    for(int i=1;i<(argc-1);i++){ //all but the last arg
+
+	if(string(argv[i]) == "-m" ){
+	    onlyMapped=true;
+	    continue;
+	}
+      
+	cerr<<"Unknown option "<<argv[i] <<" exiting"<<endl;
+	return 1;
+    }
+
+
+     string bamfiletopen = string(argv[argc-1]);
      // cout<<bamfiletopen<<endl;
      BamReader reader;
      // cout<<"ok"<<endl;
