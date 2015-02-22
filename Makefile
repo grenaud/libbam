@@ -8,11 +8,15 @@ CXXFLAGS  = -lm -O3 -Wall -I${LIBGAB} -I${LIBGAB}/VCFparser/ -I${LIBGAB}/VCFpars
 LDLIBS   += ${LIBGAB}/PutProgramInHeader.o ${BAMTOOLS}/lib/libbamtools.a   -lm -lz 
 
 
-all: allFailqc allPassqc cutDeaminated decrQualDeaminated decrQualDeaminatedDoubleStranded failQualPair filterDeaminated filterDeaminatedVCF removeRG retrieveRG subSampleBAM transBAM transBAMperRead  filterHighEditDistance.o filterHighEditDistance  editDist removeUnalignedANDWrongCigar dumpLoneMates retrieveMapped_single_and_ProperlyPair setAsUnpaired compareRG  filterDeaminatedFasta filterDeaminatedVCFpreload filterDeaminatedVCFpreload1000g filterDeaminatedpreload1000g subsamplebamFixedNumber subsamplebamFixedNumberPair addFFtomakeUdosDamagePatternHappy addRGinHeaderHack splitByChr splitByRG filterEditDist bamCat tallyByRG addRG removeTagsMapping addRG_CTEAM baseQualScorePerCycle insertSize singleAndFirstMate cutReadsDistribution cutStart cutEndKeepBeginning addRGInReadAndHeader removeIndices retrieveReadsWithName readWhereEitherIsMapped sumBases filterOnlyThoseWithRG
+all: allFailqc allPassqc cutDeaminated decrQualDeaminated decrQualDeaminatedDoubleStranded failQualPair filterDeaminated filterDeaminatedVCF removeRG retrieveRG subSampleBAM transBAM transBAMperRead  filterHighEditDistance.o filterHighEditDistance  editDist removeUnalignedANDWrongCigar dumpLoneMates retrieveMapped_single_and_ProperlyPair setAsUnpaired compareRG  filterDeaminatedFasta filterDeaminatedVCFpreload filterDeaminatedVCFpreload1000g filterDeaminatedpreload1000g subsamplebamFixedNumber subsamplebamFixedNumberPair addFFtomakeUdosDamagePatternHappy addRGinHeaderHack splitByChr splitByRG filterEditDist bamCat tallyByRG addRG removeTagsMapping addRG_CTEAM baseQualScorePerCycle insertSize singleAndFirstMate cutReadsDistribution cutStart cutEndKeepBeginning addRGInReadAndHeader removeIndices retrieveReadsWithName readWhereEitherIsMapped sumBases filterOnlyThoseWithRG errorRate errorQCScores filterDeaminatedDouble crossSampleStat
 
 
 %.o: %.cpp
 	${CXX} ${CXXFLAGS} $^ -o $@
+
+
+crossSampleStat: crossSampleStat.o  ${LIBGAB}utils.o
+	${CXX} -o $@ $^ $(LDLIBS) 
 
 
 sumBases: sumBases.o  ${LIBGAB}utils.o
@@ -71,6 +75,9 @@ retrieveMapped_single_and_ProperlyPair: retrieveMapped_single_and_ProperlyPair.o
 editDist: editDist.o  ${LIBGAB}utils.o
 	${CXX} -o $@ $^ $(LDLIBS) 
 
+errorRate: errorRate.o  ${LIBGAB}utils.o
+	${CXX} -o $@ $^ $(LDLIBS) 
+
 insertSize: insertSize.o  ${LIBGAB}utils.o
 	${CXX} -o $@ $^ $(LDLIBS) 
 
@@ -126,6 +133,7 @@ baseQualScorePerCycle: baseQualScorePerCycle.o  ${LIBGAB}utils.o ${LIBGAB}Recons
 	${CXX} -o $@ $^ $(LDLIBS) 
 
 
+
 filterDeaminatedVCF: filterDeaminatedVCF.o  ${LIBGAB}utils.o ${LIBGAB}/VCFparser/VCFreader.o ${LIBGAB}/VCFparser/gzstream/libgzstream.a  ${LIBGAB}/VCFparser/SimpleVCF.o ${LIBGAB}/VCFparser/CoreVCF.o ${LIBGAB}/VCFparser/ReadTabix.o ${LIBGAB}ReconsReferenceBAM.o /home/gabriel_renaud/Software/tabix-0.2.6/libtabix.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
@@ -142,6 +150,9 @@ filterDeaminatedFasta: filterDeaminatedFasta.o  ${LIBGAB}utils.o ${LIBGAB}Recons
 	${CXX} -o $@ $^ $(LDLIBS) 
 
 filterDeaminated: filterDeaminated.o  ${LIBGAB}utils.o ${LIBGAB}ReconsReferenceBAM.o ${LIBGAB}VCFparser/FastQParser.o ${LIBGAB}VCFparser/FastQObj.o ${LIBGAB}/VCFparser/gzstream/libgzstream.a 
+	${CXX} -o $@ $^ $(LDLIBS) 
+
+filterDeaminatedDouble: filterDeaminatedDouble.o  ${LIBGAB}utils.o ${LIBGAB}ReconsReferenceBAM.o ${LIBGAB}VCFparser/FastQParser.o ${LIBGAB}VCFparser/FastQObj.o ${LIBGAB}/VCFparser/gzstream/libgzstream.a 
 	${CXX} -o $@ $^ $(LDLIBS) 
 
 removeIndices: removeIndices.o  ${LIBGAB}utils.o
@@ -176,11 +187,16 @@ transBAM: transBAM.o  ${LIBGAB}utils.o ${LIBGAB}ReconsReferenceBAM.o
 	${CXX} -o $@ $^ $(LDLIBS) 
 
 
+
 transBAMperRead: transBAMperRead.o  ${LIBGAB}utils.o ${LIBGAB}ReconsReferenceBAM.o
+	${CXX} -o $@ $^ $(LDLIBS) 
+
+errorQCScores: errorQCScores.o  ${LIBGAB}utils.o ${LIBGAB}ReconsReferenceBAM.o
 	${CXX} -o $@ $^ $(LDLIBS) 
 
 
 
 
+
 clean :
-	rm -f  allFailqc allPassqc cutDeaminated decrQualDeaminated decrQualDeaminatedDoubleStranded failQualPair filterDeaminated filterDeaminatedVCF getCtrlReadsBAM removeRG removeIndices retrieveRG subSampleBAM transBAM transBAMperRead ${LIBGAB}ReconsReferenceBAM.o filterHighEditDistance.o filterHighEditDistance  removeUnalignedANDWrongCigar.o removeUnalignedANDWrongCigar retrieveMapped_single_and_ProperlyPair.o retrieveMapped_single_and_ProperlyPair setAsUnpaired filterDeaminatedFasta compareRG filterDeaminatedFasta  compareRG filterDeaminatedVCFpreload filterDeaminatedVCFpreload.o subsamplebamFixedNumber subsamplebamFixedNumberPair addRGinHeaderHack splitByChr filterDeaminatedVCFpreload1000g filterDeaminatedpreload1000g bamCat splitByRG tallyByRG addRG removeTagsMapping addRG_CTEAM insertSize singleAndFirstMate cutReadsDistribution  cutStart cutEndKeepBeginning addRGInReadAndHeader removeTagsMapping readWhereEitherIsMapped sumBases addFFtomakeUdosDamagePatternHappy filterOnlyThoseWithRG *.o 
+	rm -f  allFailqc allPassqc cutDeaminated decrQualDeaminated decrQualDeaminatedDoubleStranded failQualPair filterDeaminated filterDeaminatedVCF getCtrlReadsBAM removeRG removeIndices retrieveRG subSampleBAM transBAM transBAMperRead ${LIBGAB}ReconsReferenceBAM.o filterHighEditDistance.o filterHighEditDistance  removeUnalignedANDWrongCigar.o removeUnalignedANDWrongCigar retrieveMapped_single_and_ProperlyPair.o retrieveMapped_single_and_ProperlyPair setAsUnpaired filterDeaminatedFasta compareRG filterDeaminatedFasta  compareRG filterDeaminatedVCFpreload filterDeaminatedVCFpreload.o subsamplebamFixedNumber subsamplebamFixedNumberPair addRGinHeaderHack splitByChr filterDeaminatedVCFpreload1000g filterDeaminatedpreload1000g bamCat splitByRG tallyByRG addRG removeTagsMapping addRG_CTEAM insertSize singleAndFirstMate cutReadsDistribution  cutStart cutEndKeepBeginning addRGInReadAndHeader removeTagsMapping readWhereEitherIsMapped sumBases addFFtomakeUdosDamagePatternHappy filterOnlyThoseWithRG errorRate filterDeaminatedDouble crossSampleStat *.o 

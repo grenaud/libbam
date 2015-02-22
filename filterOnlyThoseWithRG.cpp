@@ -21,7 +21,7 @@ using namespace BamTools;
 
 int main (int argc, char *argv[]) {
 
-    if(argc != 4){
+    if(argc != 3){
 	cerr<<"This program retains only read with a RG tag to all reads to make GATK happy"<<endl;
 	cerr<<"Usage "<<argv[0]<<" [bam file in] [bam file out]"<<endl;
 	return 1;
