@@ -23,7 +23,7 @@ ${BAMTOOLS}/src/api/BamAlignment.h:
 	git clone --recursive --depth 1 https://github.com/pezmaster31/bamtools.git
 
 ${BAMTOOLS}/build/src/api/libbamtools.a: ${BAMTOOLS}/src/api/BamAlignment.h
-	cd ${BAMTOOLS}/ && mkdir -p build/  && cd build/ && /home/gabrielr/Software/cmake-3.15.0-rc3/bin/cmake .. && make && cd ../..
+	cd ${BAMTOOLS}/ && mkdir -p build/  && cd build/ && cmake .. && make && cd ../..
 
 # ${MISTARTOOLS}/VCFreader.o: ${MISTARTOOLS}/VCFreader.cpp
 # 	cd ${MISTARTOOLS}/ && make
