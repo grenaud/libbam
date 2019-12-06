@@ -1,6 +1,6 @@
 /*
- * failQualPair
- * Date: Oct-10-2012 
+ * cutUMI
+ * Date: Dec-06-2019 
  * Author : Gabriel Renaud gabriel.reno [at sign here ] gmail.com
  *
  */
@@ -24,8 +24,8 @@ int main (int argc, char *argv[]) {
     	(argc== 2 && string(argv[1]) == "-h") ||
     	(argc== 2 && string(argv[1]) == "-help") ||
     	(argc== 2 && string(argv[1]) == "--help") ){
-	 cout<<"Usage:allNoDUPRM [in bam] [outbam]"<<endl<<"this program takes flags all sequences in a bam file as passing the not optical duplicates"<<endl;
-    	return 1;
+	 cout<<"Usage: cutUMI [in bam] [outbam]"<<endl<<"This program cuts the UMIs"<<endl;
+	 return 1;
     }
 
      string bamfiletopen = string(argv[1]);
@@ -40,20 +40,39 @@ int main (int argc, char *argv[]) {
      }
     const SamHeader header = reader.GetHeader();
     const RefVector references = reader.GetReferenceData();
-    // cout<<header.ToString()<<endl;
-    // return 1;
     if ( !writer.Open(bamFileOUT,header,references) ) {
     	cerr << "Could not open output BAM file "<<bamFileOUT << endl;
     	return 1;
     }
 
     BamAlignment al;
- 
+    string rx;
+    string qx;
+
     while ( reader.GetNextAlignment(al) ) {
-	if( (al.AlignmentFlag & 0x0400) != 0){
-	    al.AlignmentFlag = (al.AlignmentFlag ^ 0x0400);//xor
+
+	if(al.HasTag("RX")){
+	    al.GetTag("RX",rx);
+	    al.RemoveTag("RX");
+	    rx = rx.substr(0,6);
+	    if(!al.EditTag("RX","Z",rx)){
+		cerr << "Unable to edit RX tag" << endl;
+		exit(1);     
+	    }	   
 	}
-	writer.SaveAlignment(al);    
+
+	if(al.HasTag("QX")){
+	    al.GetTag("QX",qx);
+	    al.RemoveTag("QX");
+	    qx = qx.substr(0,6);
+	    if(!al.EditTag("QX","Z",qx)){
+		cerr << "Unable to edit QX tag" << endl;
+		exit(1);     
+	    }	   
+	}
+
+
+	writer.SaveAlignment(al);
 
     } //while al
 
