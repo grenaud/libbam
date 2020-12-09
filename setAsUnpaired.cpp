@@ -1,6 +1,6 @@
 /*
- * failQualPair
- * Date: Oct-10-2012 
+ * pairsAsSingle
+ * Date: Apr-19-2013 
  * Author : Gabriel Renaud gabriel.reno [at sign here ] gmail.com
  *
  */
@@ -12,56 +12,82 @@
 #include "api/BamReader.h"
 #include "api/BamWriter.h"
 #include "api/BamAux.h"
-#include "utils.h"
+#include "libgab.h"
+#include "PutProgramInHeader.h"
 
 using namespace std;
 using namespace BamTools;
 
+const uint32_t flagSingleReads =  4; // 00000100
+
 
 int main (int argc, char *argv[]) {
 
-     if( (argc== 1) ||
-    	(argc== 2 && string(argv[1]) == "-h") ||
-    	(argc== 2 && string(argv[1]) == "-help") ||
-    	(argc== 2 && string(argv[1]) == "--help") ){
-	 cout<<"Usage:setAsUnpaired [in bam] [outbam]"<<endl<<"this program takes flags all paired sequences as singles"<<endl;
-    	return 1;
+    if(argc != 3){
+	cerr<<"This program sets unmapped first and second pairs as single-end"<<endl;
+	cerr<<"Usage "<<argv[0]<<" [bam file in] [bam file out]"<<endl;
+	return 1;
     }
 
-     string bamfiletopen = string(argv[1]);
-     string bamFileOUT   = string(argv[2]);
+    string bamfiletopen  = string(argv[1]);
+    string bamfiletwrite = string(argv[2]);
 
-     BamReader reader;
-     BamWriter writer;
+    cerr<<"Reading "<<bamfiletopen<<" writing to "<<bamfiletwrite<<endl;
 
-     if ( !reader.Open(bamfiletopen) ) {
+    BamReader reader;
+    BamWriter writer;
+
+    if ( !reader.Open(bamfiletopen) ) {
     	cerr << "Could not open input BAM files." << endl;
     	return 1;
-     }
-    const SamHeader header = reader.GetHeader();
-    const RefVector references = reader.GetReferenceData();
-    if ( !writer.Open(bamFileOUT,header,references) ) {
-    	cerr << "Could not open output BAM file "<<bamFileOUT << endl;
-    	return 1;
     }
 
+    SamHeader  myHeader=reader.GetHeader();
+    SamProgram sp;
+
+    string pID          = "pairsAsSingle";   
+    string pName        = "pairsAsSingle";   
+    string pCommandLine = "";
+    for(int i=0;i<(argc);i++){
+	pCommandLine += (string(argv[i])+" ");
+    }
+    putProgramInHeader(&myHeader,pID,pName,pCommandLine,returnGitHubVersion(string(argv[0]),"."));
+
+    //no @SQ
+    myHeader.Sequences.Clear();
+    vector< RefData > 	emptyRefVector;
+
+    if( !writer.Open(bamfiletwrite,myHeader,emptyRefVector ) ) {
+    	cerr << "Could not open output BAM file  "<<bamfiletwrite << endl;
+    	return 1;	
+    }
+
+    
     BamAlignment al;
- 
     while ( reader.GetNextAlignment(al) ) {
-	if(al.IsMapped()){
-	    cerr << "Cannot yet handle mapped reads " << endl;
-	    return 1;
+	//deleting tag data
+
+	//reset the flag
+	if(al.IsPaired()){
+	    if(al.IsFirstMate()){
+		al.AlignmentFlag =  flagSingleReads;
+		al.Name          =  al.Name+"_1";
+	    }else{
+		al.AlignmentFlag =  flagSingleReads;
+		al.Name          =  al.Name+"_2";
+	    }
+	}else{
+	    //fine
 	}
 
-	
-	al.SetIsPaired (false);
-	
-	writer.SaveAlignment(al);    
 
-    } //while al
+	writer.SaveAlignment(al);
+    }
 
     reader.Close();
     writer.Close();
+
+    cerr<<"Program "<<argv[0]<<" terminated gracefully"<<endl;
 
     return 0;
 }

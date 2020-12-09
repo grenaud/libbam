@@ -10,7 +10,7 @@
 #include "api/BamAux.h"
 #include "api/SamSequenceDictionary.h"
 
-#include "utils.h"
+#include "libgab.h"
 #include "ReconsReferenceBAM.h"
 #define maxqual 64
 #define maxbase 16

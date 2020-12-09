@@ -10,13 +10,13 @@ LDLIBS   += ${LIBGAB}/PutProgramInHeader.o ${BAMTOOLS}/build/src/api/libbamtools
 
 #${MISTARTOOLS}/VCFreader.o filterDeaminatedVCF filterDeaminatedVCFpreload filterDeaminatedVCFpreload1000g  filterDeaminatedFasta filterDeaminatedpreload1000g
 
-all: ${BAMTOOLS}/build/src/api/libbamtools.a  ${LIBGAB}/utils.o  allFailqc allPassqc allNoDUPRM cutDeaminated decrQualNs decrQualDeaminated decrQualDeaminatedDoubleStranded failQualPair filterDeaminated  removeRG replaceRG cutUMI removeThoseWithoutMD retrieveRG subSampleBAM transBAM transBAMperRead  filterHighEditDistance.o filterHighEditDistance  editDist removeUnalignedANDWrongCigar dumpLoneMates  retrieveMapped_single_and_ProperlyPair retrieveMapped_single_and_ProperlyPair_NoPCR setAsUnpaired compareRG  subsamplebamFixedNumber subsamplebamFixedNumberPair addFFtomakeUdosDamagePatternHappy addRGinHeaderHack splitByChr splitByRG filterEditDist bamCat tallyByRG addRG removeTagsMapping addRG_CTEAM baseQualScorePerCycle insertSize singleAndFirstMate cutReadsDistribution cutStart cutEndKeepBeginning addRGInReadAndHeader removeIndices retrieveReadsWithName readWhereEitherIsMapped sumBases filterOnlyThoseWithRG errorRate errorQCScores filterDeaminatedDouble crossSampleStat retrieveMappedCertainIsize subsamplebamFixedNumberCollate detectUMIvarLength
+all: ${BAMTOOLS}/build/src/api/libbamtools.a  ${LIBGAB}/libgab.a  allFailqc allPassqc allNoDUPRM cutDeaminated decrQualNs decrQualDeaminated decrQualDeaminatedDoubleStranded failQualPair filterDeaminated  removeRG replaceRG cutUMI removeThoseWithoutMD retrieveRG subSampleBAM transBAM transBAMperRead  filterHighEditDistance.o filterHighEditDistance  editDist removeUnalignedANDWrongCigar dumpLoneMates  retrieveMapped_single_and_ProperlyPair retrieveMapped_single_and_ProperlyPair_NoPCR setAsUnpaired compareRG  subsamplebamFixedNumber subsamplebamFixedNumberPair addFFtomakeUdosDamagePatternHappy addRGinHeaderHack splitByChr splitByRG filterEditDist bamCat tallyByRG addRG removeTagsMapping addRG_CTEAM baseQualScorePerCycle insertSize singleAndFirstMate cutReadsDistribution cutStart cutEndKeepBeginning addRGInReadAndHeader removeIndices retrieveReadsWithName readWhereEitherIsMapped sumBases filterOnlyThoseWithRG errorRate errorQCScores filterDeaminatedDouble crossSampleStat retrieveMappedCertainIsize subsamplebamFixedNumberCollate detectUMIvarLength
 
-${LIBGAB}/utils.h:
+${LIBGAB}/libgab.h:
 	rm -rf ${LIBGAB}
 	git clone --recursive --depth 1 https://github.com/grenaud/libgab.git
 
-${LIBGAB}/utils.o:   ${LIBGAB}/utils.h
+${LIBGAB}/libgab.a:   ${LIBGAB}/libgab.h
 	make -C ${LIBGAB}
 
 ${BAMTOOLS}/src/api/BamAlignment.h:
@@ -39,209 +39,209 @@ ${BAMTOOLS}/build/src/api/libbamtools.a: ${BAMTOOLS}/src/api/BamAlignment.h
 	${CXX} ${CXXFLAGS} $^ -o $@
 
 
-crossSampleStat: crossSampleStat.o  ${LIBGAB}utils.o
+crossSampleStat: crossSampleStat.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
 
-sumBases: sumBases.o  ${LIBGAB}utils.o
+sumBases: sumBases.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-readWhereEitherIsMapped: readWhereEitherIsMapped.o  ${LIBGAB}utils.o
+readWhereEitherIsMapped: readWhereEitherIsMapped.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-compareRG: compareRG.o  ${LIBGAB}utils.o
+compareRG: compareRG.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-addRG: addRG.o  ${LIBGAB}utils.o
+addRG: addRG.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-filterOnlyThoseWithRG: filterOnlyThoseWithRG.o  ${LIBGAB}utils.o
+filterOnlyThoseWithRG: filterOnlyThoseWithRG.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-cutStart: cutStart.o  ${LIBGAB}utils.o
+cutStart: cutStart.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-cutEndKeepBeginning: cutEndKeepBeginning.o  ${LIBGAB}utils.o
+cutEndKeepBeginning: cutEndKeepBeginning.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-addRG_CTEAM: addRG_CTEAM.o  ${LIBGAB}utils.o
+addRG_CTEAM: addRG_CTEAM.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-removeTagsMapping: removeTagsMapping.o  ${LIBGAB}utils.o
+removeTagsMapping: removeTagsMapping.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-pairsAsSingle: pairsAsSingle.o  ${LIBGAB}utils.o
+pairsAsSingle: pairsAsSingle.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-retrieveReadsWithName: retrieveReadsWithName.o  ${LIBGAB}utils.o ${LIBGAB}/gzstream/libgzstream.a
+retrieveReadsWithName: retrieveReadsWithName.o  ${LIBGAB}libgab.a ${LIBGAB}/gzstream/libgzstream.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-cutReadsDistribution: cutReadsDistribution.o  ${LIBGAB}utils.o ${LIBGAB}/gzstream/libgzstream.a
+cutReadsDistribution: cutReadsDistribution.o  ${LIBGAB}libgab.a ${LIBGAB}/gzstream/libgzstream.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-filterEditDist: filterEditDist.o  ${LIBGAB}utils.o
-	${CXX} -o $@ $^ $(LDLIBS) 
-
-
-bamCat: bamCat.o  ${LIBGAB}utils.o
+filterEditDist: filterEditDist.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
 
-dumpLoneMates: dumpLoneMates.o  ${LIBGAB}utils.o
+bamCat: bamCat.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
 
-removeUnalignedANDWrongCigar: removeUnalignedANDWrongCigar.o  ${LIBGAB}utils.o
+dumpLoneMates: dumpLoneMates.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
 
-retrieveMappedCertainIsize: retrieveMappedCertainIsize.o  ${LIBGAB}utils.o
-	${CXX} -o $@ $^ $(LDLIBS) 
-
-retrieveMapped_single_and_ProperlyPair: retrieveMapped_single_and_ProperlyPair.o  ${LIBGAB}utils.o
+removeUnalignedANDWrongCigar: removeUnalignedANDWrongCigar.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
 
-retrieveMapped_single_and_ProperlyPair_NoPCR: retrieveMapped_single_and_ProperlyPair_NoPCR.o  ${LIBGAB}utils.o
+retrieveMappedCertainIsize: retrieveMappedCertainIsize.o  ${LIBGAB}libgab.a
+	${CXX} -o $@ $^ $(LDLIBS) 
+
+retrieveMapped_single_and_ProperlyPair: retrieveMapped_single_and_ProperlyPair.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
 
-editDist: editDist.o  ${LIBGAB}utils.o
-	${CXX} -o $@ $^ $(LDLIBS) 
-
-errorRate: errorRate.o  ${LIBGAB}utils.o
-	${CXX} -o $@ $^ $(LDLIBS) 
-
-insertSize: insertSize.o  ${LIBGAB}utils.o
+retrieveMapped_single_and_ProperlyPair_NoPCR: retrieveMapped_single_and_ProperlyPair_NoPCR.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
 
-allFailqc: allFailqc.o  ${LIBGAB}utils.o
+editDist: editDist.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-detectUMIvarLength: detectUMIvarLength.o  ${LIBGAB}utils.o
+errorRate: errorRate.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-singleAndFirstMate: singleAndFirstMate.o  ${LIBGAB}utils.o
-	${CXX} -o $@ $^ $(LDLIBS) 
-
-
-setAsUnpaired: setAsUnpaired.o  ${LIBGAB}utils.o
+insertSize: insertSize.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
 
-allPassqc: allPassqc.o  ${LIBGAB}utils.o
+allFailqc: allFailqc.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-allNoDUPRM: allNoDUPRM.o  ${LIBGAB}utils.o
+detectUMIvarLength: detectUMIvarLength.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-splitByChr: splitByChr.o  ${LIBGAB}utils.o
+singleAndFirstMate: singleAndFirstMate.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-splitByRG: splitByRG.o  ${LIBGAB}utils.o
+
+setAsUnpaired: setAsUnpaired.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-tallyByRG: tallyByRG.o  ${LIBGAB}utils.o
+
+allPassqc: allPassqc.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-cutDeaminated: cutDeaminated.o  ${LIBGAB}utils.o
+allNoDUPRM: allNoDUPRM.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-decrQualNs: decrQualNs.o  ${LIBGAB}utils.o
+splitByChr: splitByChr.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-decrQualDeaminated: decrQualDeaminated.o  ${LIBGAB}utils.o
+splitByRG: splitByRG.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-decrQualDeaminatedDoubleStranded: decrQualDeaminatedDoubleStranded.o  ${LIBGAB}utils.o
+tallyByRG: tallyByRG.o  ${LIBGAB}libgab.a
+	${CXX} -o $@ $^ $(LDLIBS) 
+
+cutDeaminated: cutDeaminated.o  ${LIBGAB}libgab.a
+	${CXX} -o $@ $^ $(LDLIBS) 
+
+decrQualNs: decrQualNs.o  ${LIBGAB}libgab.a
+	${CXX} -o $@ $^ $(LDLIBS) 
+
+decrQualDeaminated: decrQualDeaminated.o  ${LIBGAB}libgab.a
+	${CXX} -o $@ $^ $(LDLIBS) 
+
+decrQualDeaminatedDoubleStranded: decrQualDeaminatedDoubleStranded.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
 failQualPair.o: failQualPair.cpp
 	${CXX} ${CXXFLAGS} failQualPair.cpp
 
-failQualPair: failQualPair.o  ${LIBGAB}utils.o
+failQualPair: failQualPair.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
 
-filterHighEditDistance: filterHighEditDistance.o  ${LIBGAB}utils.o
+filterHighEditDistance: filterHighEditDistance.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
 
-baseQualScorePerCycle: baseQualScorePerCycle.o  ${LIBGAB}utils.o ${LIBGAB}ReconsReferenceBAM.o
+baseQualScorePerCycle: baseQualScorePerCycle.o  ${LIBGAB}libgab.a ${LIBGAB}ReconsReferenceBAM.o
 	${CXX} -o $@ $^ $(LDLIBS) 
 
 
-#filterDeaminatedVCF: filterDeaminatedVCF.o  ${LIBGAB}utils.o ${MISTARTOOLS}/VCFreader.o ${LIBGAB}/gzstream/libgzstream.a  ${MISTARTOOLS}/SimpleVCF.o ${MISTARTOOLS}/CoreVCF.o ${MISTARTOOLS}/ReadTabix.o ${LIBGAB}ReconsReferenceBAM.o ${MISTARTOOLS}/tabix/libtabix.a
+#filterDeaminatedVCF: filterDeaminatedVCF.o  ${LIBGAB}libgab.a ${MISTARTOOLS}/VCFreader.o ${LIBGAB}/gzstream/libgzstream.a  ${MISTARTOOLS}/SimpleVCF.o ${MISTARTOOLS}/CoreVCF.o ${MISTARTOOLS}/ReadTabix.o ${LIBGAB}ReconsReferenceBAM.o ${MISTARTOOLS}/tabix/libtabix.a
 #	${CXX} -o $@ $^ $(LDLIBS) 
 
-#filterDeaminatedVCFpreload: filterDeaminatedVCFpreload.o  ${LIBGAB}utils.o ${MISTARTOOLS}/VCFreader.o ${LIBGAB}/gzstream/libgzstream.a  ${MISTARTOOLS}/SimpleVCF.o ${MISTARTOOLS}/CoreVCF.o ${MISTARTOOLS}/ReadTabix.o ${LIBGAB}ReconsReferenceBAM.o ${MISTARTOOLS}/tabix/libtabix.a 
+#filterDeaminatedVCFpreload: filterDeaminatedVCFpreload.o  ${LIBGAB}libgab.a ${MISTARTOOLS}/VCFreader.o ${LIBGAB}/gzstream/libgzstream.a  ${MISTARTOOLS}/SimpleVCF.o ${MISTARTOOLS}/CoreVCF.o ${MISTARTOOLS}/ReadTabix.o ${LIBGAB}ReconsReferenceBAM.o ${MISTARTOOLS}/tabix/libtabix.a 
 	${CXX} -o $@ $^ $(LDLIBS) 
 #
-#filterDeaminatedVCFpreload1000g: filterDeaminatedVCFpreload1000g.o  ${LIBGAB}utils.o ${MISTARTOOLS}/VCFreader.o ${LIBGAB}/gzstream/libgzstream.a  ${MISTARTOOLS}/SimpleVCF.o ${MISTARTOOLS}/CoreVCF.o ${MISTARTOOLS}/ReadTabix.o ${LIBGAB}ReconsReferenceBAM.o ${MISTARTOOLS}/tabix/libtabix.a
+#filterDeaminatedVCFpreload1000g: filterDeaminatedVCFpreload1000g.o  ${LIBGAB}libgab.a ${MISTARTOOLS}/VCFreader.o ${LIBGAB}/gzstream/libgzstream.a  ${MISTARTOOLS}/SimpleVCF.o ${MISTARTOOLS}/CoreVCF.o ${MISTARTOOLS}/ReadTabix.o ${LIBGAB}ReconsReferenceBAM.o ${MISTARTOOLS}/tabix/libtabix.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-#filterDeaminatedpreload1000g: filterDeaminatedpreload1000g.o  ${LIBGAB}utils.o ${MISTARTOOLS}/VCFreader.o ${LIBGAB}/gzstream/libgzstream.a  ${MISTARTOOLS}/SimpleVCF.o ${MISTARTOOLS}/CoreVCF.o ${MISTARTOOLS}/ReadTabix.o ${LIBGAB}ReconsReferenceBAM.o ${MISTARTOOLS}/tabix/libtabix.a
+#filterDeaminatedpreload1000g: filterDeaminatedpreload1000g.o  ${LIBGAB}libgab.a ${MISTARTOOLS}/VCFreader.o ${LIBGAB}/gzstream/libgzstream.a  ${MISTARTOOLS}/SimpleVCF.o ${MISTARTOOLS}/CoreVCF.o ${MISTARTOOLS}/ReadTabix.o ${LIBGAB}ReconsReferenceBAM.o ${MISTARTOOLS}/tabix/libtabix.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-#filterDeaminatedFasta: filterDeaminatedFasta.o  ${LIBGAB}utils.o ${LIBGAB}ReconsReferenceBAM.o ${LIBGAB}FastQParser.o ${LIBGAB}FastQObj.o ${LIBGAB}/gzstream/libgzstream.a 
+#filterDeaminatedFasta: filterDeaminatedFasta.o  ${LIBGAB}libgab.a ${LIBGAB}ReconsReferenceBAM.o ${LIBGAB}FastQParser.o ${LIBGAB}FastQObj.o ${LIBGAB}/gzstream/libgzstream.a 
 #	${CXX} -o $@ $^ $(LDLIBS) 
 
-filterDeaminated: filterDeaminated.o  ${LIBGAB}utils.o ${LIBGAB}ReconsReferenceBAM.o ${LIBGAB}FastQParser.o ${LIBGAB}FastQObj.o ${LIBGAB}/gzstream/libgzstream.a 
+filterDeaminated: filterDeaminated.o  ${LIBGAB}libgab.a ${LIBGAB}ReconsReferenceBAM.o ${LIBGAB}FastQParser.o ${LIBGAB}FastQObj.o ${LIBGAB}/gzstream/libgzstream.a 
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-filterDeaminatedDouble: filterDeaminatedDouble.o  ${LIBGAB}utils.o ${LIBGAB}ReconsReferenceBAM.o ${LIBGAB}FastQParser.o ${LIBGAB}FastQObj.o ${LIBGAB}/gzstream/libgzstream.a 
+filterDeaminatedDouble: filterDeaminatedDouble.o  ${LIBGAB}libgab.a ${LIBGAB}ReconsReferenceBAM.o ${LIBGAB}FastQParser.o ${LIBGAB}FastQObj.o ${LIBGAB}/gzstream/libgzstream.a 
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-removeIndices: removeIndices.o  ${LIBGAB}utils.o
+removeIndices: removeIndices.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-removeRG: removeRG.o  ${LIBGAB}utils.o
+removeRG: removeRG.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-replaceRG: replaceRG.o  ${LIBGAB}utils.o
+replaceRG: replaceRG.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-cutUMI: cutUMI.o  ${LIBGAB}utils.o
+cutUMI: cutUMI.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-removeThoseWithoutMD: removeThoseWithoutMD.o  ${LIBGAB}utils.o
+removeThoseWithoutMD: removeThoseWithoutMD.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-addRGinHeaderHack: addRGinHeaderHack.o  ${LIBGAB}utils.o
+addRGinHeaderHack: addRGinHeaderHack.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-addFFtomakeUdosDamagePatternHappy: addFFtomakeUdosDamagePatternHappy.o ${LIBGAB}utils.o
+addFFtomakeUdosDamagePatternHappy: addFFtomakeUdosDamagePatternHappy.o ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-addRGInReadAndHeader: addRGInReadAndHeader.o  ${LIBGAB}utils.o
+addRGInReadAndHeader: addRGInReadAndHeader.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-retrieveRG: retrieveRG.o  ${LIBGAB}utils.o
-	${CXX} -o $@ $^ $(LDLIBS) 
-
-
-subSampleBAM: subSampleBAM.o  ${LIBGAB}utils.o
-	${CXX} -o $@ $^ $(LDLIBS) 
-
-subsamplebamFixedNumber: subsamplebamFixedNumber.o  ${LIBGAB}utils.o
-	${CXX} -o $@ $^ $(LDLIBS) 
-
-subsamplebamFixedNumberPair: subsamplebamFixedNumberPair.o  ${LIBGAB}utils.o
-	${CXX} -o $@ $^ $(LDLIBS) 
-
-subsamplebamFixedNumberCollate: subsamplebamFixedNumberCollate.o  ${LIBGAB}utils.o
-	${CXX} -o $@ $^ $(LDLIBS) 
-
-transBAM: transBAM.o  ${LIBGAB}utils.o ${LIBGAB}ReconsReferenceBAM.o
+retrieveRG: retrieveRG.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
 
-
-transBAMperRead: transBAMperRead.o  ${LIBGAB}utils.o ${LIBGAB}ReconsReferenceBAM.o
+subSampleBAM: subSampleBAM.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
-errorQCScores: errorQCScores.o  ${LIBGAB}utils.o ${LIBGAB}ReconsReferenceBAM.o
+subsamplebamFixedNumber: subsamplebamFixedNumber.o  ${LIBGAB}libgab.a
+	${CXX} -o $@ $^ $(LDLIBS) 
+
+subsamplebamFixedNumberPair: subsamplebamFixedNumberPair.o  ${LIBGAB}libgab.a
+	${CXX} -o $@ $^ $(LDLIBS) 
+
+subsamplebamFixedNumberCollate: subsamplebamFixedNumberCollate.o  ${LIBGAB}libgab.a
+	${CXX} -o $@ $^ $(LDLIBS) 
+
+transBAM: transBAM.o  ${LIBGAB}libgab.a ${LIBGAB}ReconsReferenceBAM.o
+	${CXX} -o $@ $^ $(LDLIBS) 
+
+
+
+transBAMperRead: transBAMperRead.o  ${LIBGAB}libgab.a ${LIBGAB}ReconsReferenceBAM.o
+	${CXX} -o $@ $^ $(LDLIBS) 
+
+errorQCScores: errorQCScores.o  ${LIBGAB}libgab.a ${LIBGAB}ReconsReferenceBAM.o
 	${CXX} -o $@ $^ $(LDLIBS) 
 
 

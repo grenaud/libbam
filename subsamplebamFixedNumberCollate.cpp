@@ -7,7 +7,7 @@
 #include "api/BamWriter.h"
 #include "api/BamAux.h"
 
-#include "utils.h"
+#include "libgab.h"
 
 using namespace std;
 using namespace BamTools;
