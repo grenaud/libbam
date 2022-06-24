@@ -25,14 +25,38 @@ const uint32_t flagSecondPair  =141; // 10001101
 
 int main (int argc, char *argv[]) {
 
-    if(argc != 3){
+    bool revc1=false;
+    bool revc2=false;
+
+    if(argc < 3){
 	cerr<<"This program strips the mapping information and tags"<<endl;
 	cerr<<"Usage "<<argv[0]<<" [bam file in] [bam file out]"<<endl;
+	cerr<<"\tOptions:\n"<<endl;
+	cerr<<"\t\t--revc1\t\t\treverse complement the reverse reads, ignore flags (Default:"<<booleanAsString(revc1)<<") "<<endl;
+	cerr<<"\t\t--revc2\t\t\treverse complement the reverse reads, ignore flags (Default:"<<booleanAsString(revc2)<<") "<<endl;
 	return 1;
     }
 
-    string bamfiletopen  = string(argv[1]);
-    string bamfiletwrite = string(argv[2]);
+
+    for(int i=1;i<(argc-2);i++){ //all but the last arg
+	
+	if(string(argv[i]) == "--revc1"){
+	    revc1=true;
+	    continue;
+	}
+
+	if(string(argv[i]) == "--revc2"){
+	    revc2=true;
+	    continue;
+	}
+       
+	cerr<<"Unknown option "<<argv[i] <<" exiting"<<endl;
+	return 1;
+    }
+
+
+    string bamfiletopen  = string(argv[argc-2]);
+    string bamfiletwrite = string(argv[argc-1]);
 
     cerr<<"Reading "<<bamfiletopen<<" writing to "<<bamfiletwrite<<endl;
 
@@ -73,11 +97,48 @@ int main (int argc, char *argv[]) {
 	//reset the flag
 	if(al.IsPaired()){
 	    if(al.IsFirstMate()){
+
+		if(revc1){
+		    al.QueryBases = reverseComplement(al.QueryBases);
+		    string st     = al.Qualities;
+		    reverse(st.begin(), st.end()); 
+		    al.Qualities    = st;
+		}else{
+		    if(al.IsReverseStrand()){//reverse the first mate
+			al.QueryBases = reverseComplement(al.QueryBases);
+			string st     = al.Qualities;
+			reverse(st.begin(), st.end()); 
+			al.Qualities    = st;
+		    }
+		}
 		al.AlignmentFlag =  flagFirstPair;
 	    }else{
+
+		if(revc2){
+		    al.QueryBases = reverseComplement(al.QueryBases);
+		    string st     = al.Qualities;
+		    reverse(st.begin(), st.end()); 
+		    al.Qualities    = st;
+		}else{
+		    //cerr<<al.Name<<" "<<al.AlignmentFlag<<" "<<al.IsReverseStrand()<<endl;
+		    if(!al.IsReverseStrand()){//reverse the second mate if maps to the first strand
+			al.QueryBases = reverseComplement(al.QueryBases);
+			string st     = al.Qualities;
+			reverse(st.begin(), st.end()); 
+			al.Qualities    = st;
+		    }
+		}
 		al.AlignmentFlag =  flagSecondPair;
 	    }
 	}else{
+
+
+	    if(al.IsReverseStrand()){//reverse single-end
+		al.QueryBases = reverseComplement(al.QueryBases);
+		string st     = al.Qualities;
+		reverse(st.begin(), st.end()); 
+		al.Qualities    = st;
+	    }
 	    al.AlignmentFlag =  flagSingleReads;
 	}
 
@@ -103,4 +164,3 @@ int main (int argc, char *argv[]) {
 
     return 0;
 }
-
