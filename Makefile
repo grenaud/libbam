@@ -4,13 +4,13 @@ BAMTOOLS=  bamtools/
 LIBGAB   = libgab/
 #MISTARTOOLS   = mistartools/
 
-CXXFLAGS  = -lm -O3 -Wall -I${LIBGAB} -I${LIBGAB}/gzstream/   -I${BAMTOOLS}/src// -c
+CXXFLAGS  = -lm -O3 -Wall -I${LIBGAB} -I${LIBGAB}/gzstream/   -I${BAMTOOLS}/src//  -I${BAMTOOLS}/build/src/ -c
 #LDFLAGS  += -lbamtools
-LDLIBS   += ${LIBGAB}/PutProgramInHeader.o ${BAMTOOLS}/build/src/api/libbamtools.a   -lm -lz 
+LDLIBS   += ${LIBGAB}/PutProgramInHeader.o ${BAMTOOLS}/build/src/libbamtools.a   -lm -lz 
 
 #${MISTARTOOLS}/VCFreader.o filterDeaminatedVCF filterDeaminatedVCFpreload filterDeaminatedVCFpreload1000g  filterDeaminatedFasta filterDeaminatedpreload1000g
 
-all: ${BAMTOOLS}/build/src/api/libbamtools.a  ${LIBGAB}/libgab.a  allFailqc allPassqc allNoDUPRM cutDeaminated decrQualNs decrQualDeaminated decrQualDeaminatedDoubleStranded failQualPair filterDeaminated  removeRG replaceRG cutUMI removeThoseWithoutMD retrieveRG subSampleBAM transBAM transBAMperRead  filterHighEditDistance.o filterHighEditDistance  editDist removeUnalignedANDWrongCigar dumpLoneMates  retrieveMapped_single_and_ProperlyPair retrieveMapped_single_and_ProperlyPair_NoPCR setAsUnpaired compareRG  subsamplebamFixedNumber subsamplebamFixedNumberPair addFFtomakeUdosDamagePatternHappy addRGinHeaderHack splitByChr splitByRG filterEditDist bamCat tallyByRG addRG removeTagsMapping addRG_CTEAM baseQualScorePerCycle insertSize singleAndFirstMate cutReadsDistribution cutStart cutEndKeepBeginning addRGInReadAndHeader removeIndices retrieveReadsWithName readWhereEitherIsMapped sumBases filterOnlyThoseWithRG errorRate errorQCScores filterDeaminatedDouble crossSampleStat retrieveMappedCertainIsize subsamplebamFixedNumberCollate detectUMIvarLength
+all: ${BAMTOOLS}/build/src/libbamtools.a  ${LIBGAB}/libgab.a  allFailqc allPassqc allNoDUPRM cutDeaminated decrQualNs decrQualDeaminated decrQualDeaminatedDoubleStranded failQualPair filterDeaminated  removeRG replaceRG cutUMI removeThoseWithoutMD retrieveRG subSampleBAM transBAM transBAMperRead  filterHighEditDistance.o filterHighEditDistance  editDist removeUnalignedANDWrongCigar dumpLoneMates  retrieveMapped_single_and_ProperlyPair retrieveMapped_single_and_ProperlyPair_NoPCR setAsUnpaired compareRG  subsamplebamFixedNumber subsamplebamFixedNumberPair addFFtomakeUdosDamagePatternHappy addRGinHeaderHack splitByChr splitByRG filterEditDist bamCat tallyByRG addRG removeTagsMapping addRG_CTEAM baseQualScorePerCycle insertSize singleAndFirstMate cutReadsDistribution cutStart cutEndKeepBeginning addRGInReadAndHeader removeIndices retrieveReadsWithName readWhereEitherIsMapped sumBases filterOnlyThoseWithRG errorRate errorQCScores filterDeaminatedDouble crossSampleStat retrieveMappedCertainIsize subsamplebamFixedNumberCollate detectUMIvarLength filterNoNonDNAbase
 
 ${LIBGAB}/libgab.h:
 	rm -rf ${LIBGAB}
@@ -23,7 +23,7 @@ ${BAMTOOLS}/src/api/BamAlignment.h:
 	rm -rf ${BAMTOOLS}/
 	git clone --recursive --depth 1 https://github.com/pezmaster31/bamtools.git
 
-${BAMTOOLS}/build/src/api/libbamtools.a: ${BAMTOOLS}/src/api/BamAlignment.h
+${BAMTOOLS}/build/src/libbamtools.a: ${BAMTOOLS}/src/api/BamAlignment.h
 	cd ${BAMTOOLS}/ && mkdir -p build/  && cd build/ && cmake .. && make && cd ../..
 
 # ${MISTARTOOLS}/VCFreader.o: ${MISTARTOOLS}/VCFreader.cpp
@@ -56,6 +56,9 @@ addRG: addRG.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
 filterOnlyThoseWithRG: filterOnlyThoseWithRG.o  ${LIBGAB}libgab.a
+	${CXX} -o $@ $^ $(LDLIBS) 
+
+filterNoNonDNAbase: filterNoNonDNAbase.o  ${LIBGAB}libgab.a
 	${CXX} -o $@ $^ $(LDLIBS) 
 
 cutStart: cutStart.o  ${LIBGAB}libgab.a
